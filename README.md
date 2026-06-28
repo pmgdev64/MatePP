@@ -12,7 +12,7 @@ Lightweight animated wallpaper engine for Windows.
 
 ---
 
-# Screenshots:
+# Screenshots
 <img src = "screenshot (1).png">
 <img src = "screenshot (6).png">
 <img src = "screenshot (4).png">
