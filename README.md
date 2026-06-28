@@ -8,7 +8,7 @@
 Lightweight animated wallpaper engine for Windows.
 </p>
 
-The goal of this project is to provide a simple wallpaper engine that works well even on older and low-end computers.
+<p align="center">The goal of this project is to provide a simple wallpaper engine that works well even on older and low-end computers.</p>
 
 ---
 
