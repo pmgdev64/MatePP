@@ -1,6 +1,12 @@
-# MatePP
+<p align="center">
+  <img src="icons.png" alt="MatePP Icon" width="128">
+</p>
 
-MatePP is an open-source lightweight animated wallpaper engine for Windows.
+<h1 align="center">MatePP</h1>
+
+<p align="center">
+Lightweight animated wallpaper engine for Windows.
+</p>
 
 The goal of this project is to provide a simple wallpaper engine that works well even on older and low-end computers.
 
