@@ -1,0 +1,172 @@
+# depslib dependency file v1.0
+1782495381 source:c:\users\pmgteam\documents\codeblocks\dxwallpaper\main.cpp
+	<windows.h>
+	<d2d1.h>
+	<dwrite.h>
+	<dwmapi.h>
+	<wincodec.h>
+	<mfapi.h>
+	<mfidl.h>
+	<mfreadwrite.h>
+	<shlwapi.h>
+	<math.h>
+	<stdio.h>
+	<stdlib.h>
+	<vector>
+	<mutex>
+	<shellapi.h>
+	<thread>
+	<cstddef>
+	<commctrl.h>
+	<string>
+	<fstream>
+	<cstdarg>
+	<algorithm>
+	<psapi.h>
+	<signal.h>
+	<setjmp.h>
+
+1782499593 source:c:\users\pmgteam\documents\codeblocks\dxwallpaper\resources.rc
+	<windows.h>
+	<commctrl.h>
+
+1782658023 source:c:\users\pmgteam\documents\codeblocks\dxwallpaper\src\main.cpp
+	<windows.h>
+	<d2d1.h>
+	<dwrite.h>
+	<dwmapi.h>
+	<wincodec.h>
+	<mfapi.h>
+	<mfidl.h>
+	<mfreadwrite.h>
+	<shlwapi.h>
+	<math.h>
+	<stdio.h>
+	<stdlib.h>
+	<vector>
+	<mutex>
+	<shellapi.h>
+	<cstddef>
+	<commctrl.h>
+	<string>
+	<fstream>
+	<cstdarg>
+	<algorithm>
+	<psapi.h>
+	<signal.h>
+	<setjmp.h>
+	<mmsystem.h>
+	"common.h"
+	"settings.h"
+	"about.h"
+	"pipe_server.h"
+
+1782498394 source:c:\users\pmgteam\documents\codeblocks\dxwallpaper\src\settings.cpp
+	<windows.h>
+	<commctrl.h>
+	<stdio.h>
+	<string>
+	<vector>
+	"common.h"
+	"settings.h"
+
+1782498551 c:\users\pmgteam\documents\codeblocks\dxwallpaper\include\common.h
+	<windows.h>
+	<vector>
+	<string>
+	<mutex>
+
+1782498382 c:\users\pmgteam\documents\codeblocks\dxwallpaper\include\settings.h
+	<windows.h>
+
+1782554034 source:c:\users\pmgteam\documents\codeblocks\dxwallpaper\src\about.cpp
+	<windows.h>
+	<stdio.h>
+	"about.h"
+	"common.h"
+
+1782554025 c:\users\pmgteam\documents\codeblocks\dxwallpaper\include\about.h
+	<windows.h>
+
+1782554741 c:\users\pmgteam\documents\codeblocks\dxwallpaper\include\pipe_server.h
+	<windows.h>
+
+1782554751 source:c:\users\pmgteam\documents\codeblocks\dxwallpaper\src\pipe_server.cpp
+	<windows.h>
+	<stdio.h>
+	<string>
+	"common.h"
+	"pipe_server.h"
+
+1782499593 source:c:\users\pmgteam\documents\codeblocks\matepp\resources.rc
+	<windows.h>
+	<commctrl.h>
+
+1782554034 source:c:\users\pmgteam\documents\codeblocks\matepp\src\about.cpp
+	<windows.h>
+	<stdio.h>
+	"about.h"
+	"common.h"
+
+1782554025 c:\users\pmgteam\documents\codeblocks\matepp\include\about.h
+	<windows.h>
+
+1782498551 c:\users\pmgteam\documents\codeblocks\matepp\include\common.h
+	<windows.h>
+	<vector>
+	<string>
+	<mutex>
+
+1782662867 source:c:\users\pmgteam\documents\codeblocks\matepp\src\main.cpp
+	<windows.h>
+	<d2d1.h>
+	<dwrite.h>
+	<dwmapi.h>
+	<wincodec.h>
+	<mfapi.h>
+	<mfidl.h>
+	<mfreadwrite.h>
+	<shlwapi.h>
+	<math.h>
+	<stdio.h>
+	<stdlib.h>
+	<vector>
+	<mutex>
+	<shellapi.h>
+	<cstddef>
+	<commctrl.h>
+	<string>
+	<fstream>
+	<cstdarg>
+	<algorithm>
+	<psapi.h>
+	<signal.h>
+	<setjmp.h>
+	<mmsystem.h>
+	"common.h"
+	"settings.h"
+	"about.h"
+	"pipe_server.h"
+
+1782498382 c:\users\pmgteam\documents\codeblocks\matepp\include\settings.h
+	<windows.h>
+
+1782554741 c:\users\pmgteam\documents\codeblocks\matepp\include\pipe_server.h
+	<windows.h>
+
+1782554751 source:c:\users\pmgteam\documents\codeblocks\matepp\src\pipe_server.cpp
+	<windows.h>
+	<stdio.h>
+	<string>
+	"common.h"
+	"pipe_server.h"
+
+1782498394 source:c:\users\pmgteam\documents\codeblocks\matepp\src\settings.cpp
+	<windows.h>
+	<commctrl.h>
+	<stdio.h>
+	<string>
+	<vector>
+	"common.h"
+	"settings.h"
+

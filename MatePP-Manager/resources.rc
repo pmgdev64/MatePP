@@ -1,0 +1,40 @@
+// resources.rc - MatePP Manager
+#include <windows.h>
+
+#define IDI_MAIN_ICON 101
+
+// Icon
+IDI_MAIN_ICON ICON "app.ico"
+
+// Manifest
+1 RT_MANIFEST "mppmgr.exe.manifest"
+
+// Version Info
+VS_VERSION_INFO VERSIONINFO
+FILEVERSION     1,0,0,0
+PRODUCTVERSION  1,0,0,0
+FILEFLAGSMASK   VS_FFI_FILEFLAGSMASK
+FILEFLAGS       0
+FILEOS          VOS_NT_WINDOWS32
+FILETYPE        VFT_APP
+FILESUBTYPE     VFT2_UNKNOWN
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904E4"
+        BEGIN
+            VALUE "CompanyName",      "PmgTeam\0"
+            VALUE "FileDescription",  "Mate++ Wallpaper Manager\0"
+            VALUE "FileVersion",      "1.0.0.0\0"
+            VALUE "InternalName",     "mppmgr\0"
+            VALUE "LegalCopyright",   "Free to Use & Open-Source. Developed by PmgTeam.\0"
+            VALUE "OriginalFilename", "mppmgr.exe\0"
+            VALUE "ProductName",      "Mate++ Manager\0"
+            VALUE "ProductVersion",   "1.0.0.0\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x0409, 1252
+    END
+END

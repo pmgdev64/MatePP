@@ -1,0 +1,684 @@
+[EXCEPTION] Signal handlers registered
+========================================
+Wallpaper Engine D2D v2.0 Starting...
+Exception Handling: C++ try/catch + Signal Handlers
+========================================
+[OK] WorkerW: 0x0000000000030644
+[OK] D2D ready (1366x768)
+[OK] System tray icon created
+[Playlist] Found 2 media files
+[LoadMedia] Loading (1/2): C:\Users\pmgteam\Documents\Codeblocks\dxwallpaper\bin\Debug\wallpaper.mp4
+[OK] Video format: NV12 (CPU conversion)
+[OK] Video: 1280x720 @ 62.5fps
+[LoadMedia] SUCCESS
+--- Running 30fps MT ---
+System tray icon available (right-click for menu)
+Exception Handling: Active
+[Tray] Settings
+[Tray] Exit
+
+[..] Shutting down...
+[..] Cleaning up...
+[OK] System tray icon removed
+[OK] Cleanup complete
+[EXCEPTION] Total exceptions caught: 0
+[OK] Done!
+[EXCEPTION] Signal handlers registered
+========================================
+Wallpaper Engine D2D v2.0 Starting...
+Exception Handling: C++ try/catch + Signal Handlers
+========================================
+[OK] WorkerW: 0x0000000000030644
+[OK] D2D ready (1366x768)
+[OK] System tray icon created
+[Playlist] Found 2 media files
+[LoadMedia] Loading (1/2): C:\Users\pmgteam\Documents\Codeblocks\dxwallpaper\bin\Debug\wallpaper.mp4
+[OK] Video format: NV12 (CPU conversion)
+[OK] Video: 1280x720 @ 62.5fps
+[LoadMedia] SUCCESS
+--- Running 30fps MT ---
+System tray icon available (right-click for menu)
+Exception Handling: Active
+[Tray] Reload media
+[Reload] Reloading current media...
+[Reload] Reloading: C:\Users\pmgteam\Documents\Codeblocks\dxwallpaper\bin\Debug\wallpaper.mp4
+[OK] Video format: NV12 (CPU conversion)
+[OK] Video: 1280x720 @ 62.5fps
+[Reload] SUCCESS
+[Media] Next track
+[Next] Track 0 -> 1
+[LoadMedia] Loading (2/2): C:\Users\pmgteam\Documents\Codeblocks\dxwallpaper\bin\Debug\wallpaper2.mp4
+[OK] Video format: NV12 (CPU conversion)
+[OK] Video: 1280x720 @ 30.3fps
+[LoadMedia] SUCCESS
+[Media] Next track
+[Next] Track 1 -> 0
+[LoadMedia] Loading (1/2): C:\Users\pmgteam\Documents\Codeblocks\dxwallpaper\bin\Debug\wallpaper.mp4
+[OK] Video format: NV12 (CPU conversion)
+[OK] Video: 1280x720 @ 62.5fps
+[LoadMedia] SUCCESS
+[Tray] Exit
+
+[..] Shutting down...
+[..] Cleaning up...
+[OK] System tray icon removed
+[OK] Cleanup complete
+[EXCEPTION] Total exceptions caught: 0
+[OK] Done!
+[EXCEPTION] Signal handlers registered
+========================================
+Wallpaper Engine D2D v2.0 Starting...
+Exception Handling: C++ try/catch + Signal Handlers
+========================================
+[OK] WorkerW: 0x0000000000030644
+[OK] D2D ready (1366x768)
+[OK] System tray icon created
+[Playlist] Found 2 media files
+[LoadMedia] Loading (1/2): C:\Users\pmgteam\Documents\Codeblocks\dxwallpaper\bin\Debug\wallpaper.mp4
+[OK] Video format: NV12 (CPU conversion)
+[OK] Video: 1280x720 @ 62.5fps
+[LoadMedia] SUCCESS
+--- Running 30fps MT ---
+System tray icon available (right-click for menu)
+Exception Handling: Active
+[Tray] Exit
+
+[..] Shutting down...
+[..] Cleaning up...
+[OK] System tray icon removed
+[OK] Cleanup complete
+[EXCEPTION] Total exceptions caught: 0
+[OK] Done!
+[EXCEPTION] Signal handlers registered
+========================================
+Wallpaper Engine D2D v2.0 Starting...
+Exception Handling: C++ try/catch + Signal Handlers
+========================================
+[OK] WorkerW: 0x0000000000030644
+[OK] D2D ready (1366x768)
+[OK] Icon loaded from resource successfully
+[OK] System tray icon created
+[Playlist] Found 2 media files
+[LoadMedia] Loading (1/2): C:\Users\pmgteam\Documents\Codeblocks\dxwallpaper\bin\Debug\wallpaper.mp4
+[OK] Video format: NV12 (CPU conversion)
+[OK] Video: 1280x720 @ 62.5fps
+[LoadMedia] SUCCESS
+--- Running 30fps MT ---
+System tray icon available (right-click for menu)
+Exception Handling: Active
+[Tray] Settings
+[Tray] Exit
+
+[..] Shutting down...
+[..] Cleaning up...
+[OK] System tray icon removed
+[OK] Cleanup complete
+[EXCEPTION] Total exceptions caught: 0
+[OK] Done!
+[EXCEPTION] Signal handlers registered
+========================================
+Wallpaper Engine D2D v2.0 Starting...
+Exception Handling: C++ try/catch + Signal Handlers
+========================================
+[OK] WorkerW: 0x0000000000030644
+[OK] D2D ready (1366x768)
+[OK] Icon loaded from resource successfully
+[OK] System tray icon created
+[Playlist] Found 2 media files
+[LoadMedia] Loading (1/2): C:\Users\pmgteam\Documents\Codeblocks\dxwallpaper\bin\Debug\wallpaper.mp4
+[OK] Video format: NV12 (CPU conversion)
+[OK] Video: 1280x720 @ 62.5fps
+[LoadMedia] SUCCESS
+--- Running 30fps MT ---
+System tray icon available (right-click for menu)
+Exception Handling: Active
+[Tray] Settings
+[Settings] Dialog initialized
+[Settings] Next track
+[Next] Track 0 -> 1
+[LoadMedia] Loading (2/2): C:\Users\pmgteam\Documents\Codeblocks\dxwallpaper\bin\Debug\wallpaper2.mp4
+[OK] Video format: NV12 (CPU conversion)
+[OK] Video: 1280x720 @ 30.3fps
+[LoadMedia] SUCCESS
+[Settings] Previous track
+[Prev] Track 1 -> 0
+[LoadMedia] Loading (1/2): C:\Users\pmgteam\Documents\Codeblocks\dxwallpaper\bin\Debug\wallpaper.mp4
+[OK] Video format: NV12 (CPU conversion)
+[OK] Video: 1280x720 @ 62.5fps
+[LoadMedia] SUCCESS
+[Settings] Reload media
+[Reload] Reloading current media...
+[Reload] Reloading: C:\Users\pmgteam\Documents\Codeblocks\dxwallpaper\bin\Debug\wallpaper.mp4
+[OK] Video format: NV12 (CPU conversion)
+[OK] Video: 1280x720 @ 62.5fps
+[Reload] SUCCESS
+[Settings] Volume set to 99%
+[Settings] Volume set to 95%
+[Settings] Volume set to 89%
+[Settings] Volume set to 82%
+[Settings] Volume set to 81%
+[Settings] Volume set to 73%
+[Settings] Volume set to 69%
+[Settings] Volume set to 68%
+[Settings] Volume set to 63%
+[Settings] Volume set to 57%
+[Settings] Volume set to 40%
+[Settings] Volume set to 36%
+[Settings] Volume set to 31%
+[Settings] Volume set to 23%
+[Settings] Volume set to 15%
+[Settings] Volume set to 13%
+[Settings] Volume set to 10%
+[Settings] Volume set to 6%
+[Settings] Volume set to 4%
+[Settings] Volume set to 0%
+[Settings] Volume set to 1%
+[Settings] Volume set to 18%
+[Settings] Volume set to 25%
+[Settings] Volume set to 29%
+[Settings] Volume set to 34%
+[Settings] Volume set to 36%
+[Settings] Volume set to 37%
+[Settings] Volume set to 45%
+[Settings] Volume set to 52%
+[Settings] Volume set to 54%
+[Settings] Volume set to 60%
+[Settings] Volume set to 62%
+[Settings] Volume set to 67%
+[Settings] Volume set to 71%
+[Settings] Volume set to 78%
+[Settings] Volume set to 80%
+[Settings] Volume set to 84%
+[Settings] Volume set to 87%
+[Settings] Volume set to 90%
+[Settings] Volume set to 91%
+[Settings] Volume set to 92%
+[Settings] Volume set to 93%
+[Settings] Volume set to 96%
+[Settings] Volume set to 99%
+[Settings] Volume set to 100%
+[Settings] Volume set to 100%
+[Settings] Volume set to 100%
+[Settings] Muted
+[Settings] Unmuted
+[Settings] Dialog closed via X button
+[Media] Loop: OFF
+[Media] Loop: ON
+[Media] Next track
+[Next] Track 0 -> 1
+[LoadMedia] Loading (2/2): C:\Users\pmgteam\Documents\Codeblocks\dxwallpaper\bin\Debug\wallpaper2.mp4
+[OK] Video format: NV12 (CPU conversion)
+[OK] Video: 1280x720 @ 30.3fps
+[LoadMedia] SUCCESS
+[Tray] Settings
+[Settings] Dialog initialized
+[Settings] Dialog closed
+[Tray] Reload media
+[Reload] Reloading current media...
+[Reload] Reloading: C:\Users\pmgteam\Documents\Codeblocks\dxwallpaper\bin\Debug\wallpaper2.mp4
+[OK] Video format: NV12 (CPU conversion)
+[OK] Video: 1280x720 @ 30.3fps
+[Reload] SUCCESS
+[Media] Next track
+[Next] Track 1 -> 0
+[LoadMedia] Loading (1/2): C:\Users\pmgteam\Documents\Codeblocks\dxwallpaper\bin\Debug\wallpaper.mp4
+[OK] Video format: NV12 (CPU conversion)
+[OK] Video: 1280x720 @ 62.5fps
+[LoadMedia] SUCCESS
+[Tray] Exit
+
+[..] Shutting down...
+[..] Cleaning up...
+[OK] System tray icon removed
+[OK] Cleanup complete
+[EXCEPTION] Total exceptions caught: 0
+[OK] Done!
+[EXCEPTION] Signal handlers registered
+========================================
+Wallpaper Engine D2D v2.0 Starting...
+Exception Handling: C++ try/catch + Signal Handlers
+========================================
+[OK] WorkerW: 0x0000000000030644
+[OK] D2D ready (1366x768)
+[OK] Icon loaded from resource successfully
+[OK] System tray icon created
+[Playlist] Found 3 media files
+[LoadMedia] Loading (1/3): C:\Users\pmgteam\Documents\Codeblocks\dxwallpaper\bin\Debug\wallpaper.mp4
+[OK] Video format: NV12 (CPU conversion)
+[OK] Video: 1280x720 @ 62.5fps
+[LoadMedia] SUCCESS
+--- Running 30fps MT ---
+System tray icon available (right-click for menu)
+Exception Handling: Active
+[Media] Next track
+[Next] Track 0 -> 1
+[LoadMedia] Loading (2/3): C:\Users\pmgteam\Documents\Codeblocks\dxwallpaper\bin\Debug\wallpaper2.mp4
+[OK] Video format: NV12 (CPU conversion)
+[OK] Video: 1280x720 @ 30.3fps
+[LoadMedia] SUCCESS
+[Media] Next track
+[Next] Track 1 -> 2
+[LoadMedia] Loading (3/3): C:\Users\pmgteam\Documents\Codeblocks\dxwallpaper\bin\Debug\wallpaper3.mp4
+[OK] Video format: NV12 (CPU conversion)
+[OK] Video: 1280x720 @ 62.5fps
+[LoadMedia] SUCCESS
+[Tray] Exit
+
+[..] Shutting down...
+[..] Cleaning up...
+[OK] System tray icon removed
+[OK] Cleanup complete
+[EXCEPTION] Total exceptions caught: 0
+[OK] Done!
+[EXCEPTION] Signal handlers registered
+========================================
+Wallpaper Engine D2D v2.0 Starting...
+Exception Handling: C++ try/catch + Signal Handlers
+========================================
+[OK] WorkerW: 0x0000000000030644
+[OK] D2D ready (1366x768)
+[OK] Icon loaded from resource successfully
+[OK] System tray icon created
+[Playlist] Found 3 media files
+[LoadMedia] Loading (1/3): C:\Users\pmgteam\Documents\Codeblocks\dxwallpaper\bin\Debug\wallpaper.mp4
+[OK] Video format: NV12 (CPU conversion)
+[OK] Video: 1280x720 @ 62.5fps
+[LoadMedia] SUCCESS
+--- Running 30fps MT ---
+System tray icon available (right-click for menu)
+Exception Handling: Active
+[Tray] Settings
+[Settings] Dialog initialized
+[Settings] Dialog closed via X button
+[Tray] About
+[Tray] Reload media
+[Reload] Reloading current media...
+[Reload] Reloading: C:\Users\pmgteam\Documents\Codeblocks\dxwallpaper\bin\Debug\wallpaper.mp4
+[OK] Video format: NV12 (CPU conversion)
+[OK] Video: 1280x720 @ 62.5fps
+[Reload] SUCCESS
+[Media] Next track
+[Next] Track 0 -> 1
+[LoadMedia] Loading (2/3): C:\Users\pmgteam\Documents\Codeblocks\dxwallpaper\bin\Debug\wallpaper2.mp4
+[OK] Video format: NV12 (CPU conversion)
+[OK] Video: 1280x720 @ 30.3fps
+[LoadMedia] SUCCESS
+[Media] Next track
+[Next] Track 1 -> 2
+[LoadMedia] Loading (3/3): C:\Users\pmgteam\Documents\Codeblocks\dxwallpaper\bin\Debug\wallpaper3.mp4
+[OK] Video format: NV12 (CPU conversion)
+[OK] Video: 1280x720 @ 62.5fps
+[LoadMedia] SUCCESS
+[Media] Next track
+[Next] Track 2 -> 0
+[LoadMedia] Loading (1/3): C:\Users\pmgteam\Documents\Codeblocks\dxwallpaper\bin\Debug\wallpaper.mp4
+[OK] Video format: NV12 (CPU conversion)
+[OK] Video: 1280x720 @ 62.5fps
+[LoadMedia] SUCCESS
+[Tray] Exit
+
+[..] Shutting down...
+[..] Cleaning up...
+[OK] System tray icon removed
+[OK] Cleanup complete
+[EXCEPTION] Total exceptions caught: 0
+[OK] Done!
+[EXCEPTION] Signal handlers registered
+========================================
+Wallpaper Engine D2D v2.0 Starting...
+Exception Handling: C++ try/catch + Signal Handlers
+========================================
+[OK] WorkerW: 0x00000000000902de
+[OK] D2D ready (1366x768)
+[OK] Icon loaded from resource successfully
+[OK] System tray icon created
+[Playlist] Found 3 media files
+[LoadMedia] Loading (1/3): C:\Users\pmgteam\Documents\Codeblocks\dxwallpaper\bin\Debug\wallpaper.mp4
+[OK] Video format: NV12 (CPU conversion)
+[OK] Video: 1280x720 @ 62.5fps
+[Decode] Thread started
+[LoadMedia] SUCCESS
+--- Running 30fps MT ---
+System tray icon available (right-click for menu)
+Exception Handling: Active
+[Media] Paused
+[Media] Next track
+[Next] Track 0 -> 1
+[LoadMedia] Loading (2/3): C:\Users\pmgteam\Documents\Codeblocks\dxwallpaper\bin\Debug\wallpaper2.mp4
+[Decode] Thread stopped
+[OK] Video format: NV12 (CPU conversion)
+[OK] Video: 1280x720 @ 30.3fps
+[Decode] Thread started
+[LoadMedia] SUCCESS
+[Media] Next track
+[Next] Track 1 -> 2
+[LoadMedia] Loading (3/3): C:\Users\pmgteam\Documents\Codeblocks\dxwallpaper\bin\Debug\wallpaper3.mp4
+[Decode] Thread stopped
+[OK] Video format: NV12 (CPU conversion)
+[OK] Video: 1280x720 @ 62.5fps
+[Decode] Thread started
+[LoadMedia] SUCCESS
+[Settings] Dialog initialized
+[Settings] Dialog closed via X button
+[Tray] Settings
+[Settings] Dialog initialized
+[Settings] Volume set to 99%
+[Settings] Volume set to 92%
+[Settings] Volume set to 91%
+[Settings] Volume set to 49%
+[Settings] Volume set to 46%
+[Settings] Volume set to 40%
+[Settings] Volume set to 22%
+[Settings] Volume set to 12%
+[Settings] Volume set to 13%
+[Settings] Volume set to 25%
+[Settings] Volume set to 30%
+[Settings] Volume set to 74%
+[Settings] Volume set to 77%
+[Settings] Volume set to 79%
+[Settings] Volume set to 92%
+[Settings] Volume set to 95%
+[Settings] Volume set to 96%
+[Settings] Volume set to 100%
+[Settings] Volume set to 100%
+[Settings] Volume set to 100%
+[Settings] Paused
+[Settings] Resumed
+[Settings] Paused
+[Settings] Resumed
+[Settings] Paused
+[Settings] Reload media
+[Reload] Reloading current media...
+[Reload] Reloading: C:\Users\pmgteam\Documents\Codeblocks\dxwallpaper\bin\Debug\wallpaper3.mp4
+[OK] Video format: NV12 (CPU conversion)
+[OK] Video: 1280x720 @ 62.5fps
+[Decode] Thread started
+[Reload] SUCCESS
+[Settings] Reload media
+[Reload] Reloading current media...
+[Reload] Reloading: C:\Users\pmgteam\Documents\Codeblocks\dxwallpaper\bin\Debug\wallpaper3.mp4
+[OK] Video format: NV12 (CPU conversion)
+[OK] Video: 1280x720 @ 62.5fps
+[Decode] Thread started
+[Reload] SUCCESS
+[Settings] Next track
+[Next] Track 2 -> 0
+[LoadMedia] Loading (1/3): C:\Users\pmgteam\Documents\Codeblocks\dxwallpaper\bin\Debug\wallpaper.mp4
+[Decode] Thread stopped
+[Decode] Thread stopped
+[Decode] Thread stopped
+[OK] Video format: NV12 (CPU conversion)
+[OK] Video: 1280x720 @ 62.5fps
+[Decode] Thread started
+[LoadMedia] SUCCESS
+[Settings] Dialog closed via X button
+[Tray] Exit
+
+[..] Shutting down...
+[..] Cleaning up...
+[OK] System tray icon removed
+[Decode] Thread stopped
+[OK] Cleanup complete
+[EXCEPTION] Total exceptions caught: 0
+[OK] Done!
+[EXCEPTION] Signal handlers registered
+========================================
+Wallpaper Engine D2D v2.0 Starting...
+Exception Handling: C++ try/catch + Signal Handlers
+========================================
+[OK] WorkerW: 0x00000000000902de
+[OK] D2D ready (1366x768)
+[OK] Icon loaded from resource successfully
+[OK] System tray icon created
+[Playlist] Found 3 media files
+[LoadMedia] Loading (1/3): C:\Users\pmgteam\Documents\Codeblocks\dxwallpaper\bin\Debug\wallpaper.mp4
+[OK] Video format: NV12 (CPU conversion)
+[OK] Video: 1280x720 @ 62.5fps
+[Decode] Thread started
+[LoadMedia] SUCCESS
+--- Running 30fps MT ---
+System tray icon available (right-click for menu)
+Exception Handling: Active
+[Pipe] Server started on \\.\pipe\MatePPHub
+[Pipe] Server thread started
+[Pipe] Cmd: CLEAR
+[Pipe] CLEAR playlist
+[Tray] Exit
+
+[..] Shutting down...
+[Pipe] Server thread stopped
+[Pipe] Server stopped
+[..] Cleaning up...
+[OK] System tray icon removed
+[Decode] Thread stopped
+[OK] Cleanup complete
+[EXCEPTION] Total exceptions caught: 0
+[OK] Done!
+[EXCEPTION] Signal handlers registered
+========================================
+Wallpaper Engine D2D v2.0 Starting...
+Exception Handling: C++ try/catch + Signal Handlers
+========================================
+[OK] WorkerW: 0x00000000000902de
+[OK] D2D ready (1366x768)
+[OK] Icon loaded from resource successfully
+[OK] System tray icon created
+[Playlist] Found 3 media files
+[LoadMedia] Loading (1/3): C:\Users\pmgteam\Documents\Codeblocks\dxwallpaper\bin\Debug\wallpaper.mp4
+[OK] Video format: NV12 (CPU conversion)
+[OK] Video: 1280x720 @ 62.5fps
+[Decode] Thread started
+[LoadMedia] SUCCESS
+--- Running 30fps MT ---
+System tray icon available (right-click for menu)
+Exception Handling: Active
+[Pipe] Server started on \\.\pipe\MatePPHub
+[Pipe] Server thread started
+[Pipe] Cmd: LOAD:C:\Users\pmgteam\Documents\Codeblocks\dxwallpaper\bin\Debug\wallpaper2.mp4
+[LoadMedia] Loading (2/3): C:\Users\pmgteam\Documents\Codeblocks\dxwallpaper\bin\Debug\wallpaper2.mp4
+[Decode] Thread stopped
+[OK] Video format: NV12 (CPU conversion)
+[OK] Video: 1280x720 @ 30.3fps
+[Decode] Thread started
+[LoadMedia] SUCCESS
+[Pipe] LOAD -> track 1
+[Pipe] Cmd: CLEAR
+[Pipe] CLEAR playlist
+[Pipe] Cmd: LOAD:C:\Users\pmgteam\Documents\Codeblocks\dxwallpaper\bin\Debug\wallpaper3.mp4
+[LoadMedia] Loading (1/1): C:\Users\pmgteam\Documents\Codeblocks\dxwallpaper\bin\Debug\wallpaper3.mp4
+[Decode] Thread stopped
+[OK] Video format: NV12 (CPU conversion)
+[OK] Video: 1280x720 @ 62.5fps
+[Decode] Thread started
+[LoadMedia] SUCCESS
+[Pipe] LOAD -> track 0
+[Tray] Settings
+[Settings] Dialog initialized
+[Settings] Dialog closed
+[Media] Next track
+[Next] Track 0 -> 0
+[LoadMedia] Loading (1/1): C:\Users\pmgteam\Documents\Codeblocks\dxwallpaper\bin\Debug\wallpaper3.mp4
+[Decode] Thread stopped
+[OK] Video format: NV12 (CPU conversion)
+[OK] Video: 1280x720 @ 62.5fps
+[Decode] Thread started
+[LoadMedia] SUCCESS
+[Media] Next track
+[Next] Track 0 -> 0
+[LoadMedia] Loading (1/1): C:\Users\pmgteam\Documents\Codeblocks\dxwallpaper\bin\Debug\wallpaper3.mp4
+[Decode] Thread stopped
+[OK] Video format: NV12 (CPU conversion)
+[OK] Video: 1280x720 @ 62.5fps
+[Decode] Thread started
+[LoadMedia] SUCCESS
+[Media] Volume: 100%
+[Tray] Exit
+
+[..] Shutting down...
+[Pipe] Server thread stopped
+[Pipe] Server stopped
+[..] Cleaning up...
+[OK] System tray icon removed
+[Decode] Thread stopped
+[OK] Cleanup complete
+[EXCEPTION] Total exceptions caught: 0
+[OK] Done!
+[EXCEPTION] Signal handlers registered
+===================================================
+Mate++ Wallpaper Engine D2D v2.0 Starting...
+Exception Handling: C++ try/catch + Signal Handlers
+===================================================
+[OK] WorkerW: 0x0000000000050376
+[OK] D2D ready (1366x768)
+[OK] Icon loaded from resource successfully
+[OK] System tray icon created
+[Playlist] Found 3 media files
+[LoadMedia] Loading (1/3): C:\Users\pmgteam\Documents\Codeblocks\dxwallpaper\bin\Debug\wallpaper.mp4
+[OK] Video format: NV12 (CPU conversion)
+[OK] Video: 1280x720 @ 62.5fps
+[Decode] Thread started
+[LoadMedia] SUCCESS
+--- Running 30fps MT ---
+System tray icon available (right-click for menu)
+Exception Handling: Active
+[Pipe] Server started on \\.\pipe\MatePPHub
+[Pipe] Server thread started
+[Tray] About
+[Media] Previous track
+[Prev] Track 0 -> 2
+[LoadMedia] Loading (3/3): C:\Users\pmgteam\Documents\Codeblocks\dxwallpaper\bin\Debug\wallpaper3.mp4
+[Decode] Thread stopped
+[OK] Video format: NV12 (CPU conversion)
+[OK] Video: 1280x720 @ 62.5fps
+[Decode] Thread started
+[LoadMedia] SUCCESS
+[Tray] Exit
+
+[..] Shutting down...
+[Pipe] Server thread stopped
+[Pipe] Server stopped
+[..] Cleaning up...
+[OK] System tray icon removed
+[Decode] Thread stopped
+[OK] Cleanup complete
+[EXCEPTION] Total exceptions caught: 0
+[OK] Done!
+[EXCEPTION] Signal handlers registered
+===================================================
+Mate++ Wallpaper Engine D2D v2.0 Starting...
+Exception Handling: C++ try/catch + Signal Handlers
+===================================================
+[OK] WorkerW: 0x0000000000050376
+[OK] D2D ready (1366x768)
+[OK] Icon loaded from resource successfully
+[OK] System tray icon created
+[WARN] No media found, demo mode
+--- Running 60fps MT ---
+System tray icon available (right-click for menu)
+Exception Handling: Active
+[Pipe] Server started on \\.\pipe\MatePPHub
+[Pipe] Server thread started
+[Tray] Reload media
+[Reload] Reloading current media...
+[Reload] No media to reload
+[Tray] Exit
+
+[..] Shutting down...
+[Pipe] Server thread stopped
+[Pipe] Server stopped
+[..] Cleaning up...
+[OK] System tray icon removed
+[OK] Cleanup complete
+[EXCEPTION] Total exceptions caught: 0
+[OK] Done!
+[EXCEPTION] Signal handlers registered
+===================================================
+Mate++ Wallpaper Engine D2D v2.0 Starting...
+Exception Handling: C++ try/catch + Signal Handlers
+===================================================
+[OK] WorkerW: 0x0000000000050376
+[OK] D2D ready (1366x768)
+[OK] Icon loaded from resource successfully
+[OK] System tray icon created
+[Playlist] Found 3 media files
+[LoadMedia] Loading (1/3): C:\Users\pmgteam\Documents\Codeblocks\dxwallpaper\bin\Debug\wallpaper.mp4
+[OK] Video format: NV12 (CPU conversion)
+[OK] Video: 1280x720 @ 62.5fps (frameDur=16ms)
+[Decode] Thread started
+[LoadMedia] SUCCESS
+--- Running 60fps MT ---
+System tray icon available (right-click for menu)
+Exception Handling: Active
+[Pipe] Server started on \\.\pipe\MatePPHub
+[Pipe] Server thread started
+[Debug] Show Debug Text: ON
+[Tray] Settings
+[Settings] Dialog initialized
+[Settings] Paused
+[Settings] Resumed
+[Settings] Paused
+[Settings] Resumed
+[Settings] Always on Top: ON
+[Settings] Always on Top: OFF
+[Settings] Muted
+[Settings] Unmuted
+[Settings] Loop: OFF
+[Settings] Loop: ON
+[Settings] Volume set to 99%
+[Settings] Volume set to 97%
+[Settings] Volume set to 95%
+[Settings] Volume set to 91%
+[Settings] Volume set to 87%
+[Settings] Volume set to 85%
+[Settings] Volume set to 81%
+[Settings] Volume set to 78%
+[Settings] Volume set to 74%
+[Settings] Volume set to 62%
+[Settings] Volume set to 56%
+[Settings] Volume set to 55%
+[Settings] Volume set to 53%
+[Settings] Volume set to 52%
+[Settings] Volume set to 51%
+[Settings] Volume set to 53%
+[Settings] Volume set to 60%
+[Settings] Volume set to 73%
+[Settings] Volume set to 100%
+[Settings] Volume set to 100%
+[Settings] Volume set to 100%
+[Settings] Reload media
+[Reload] Reloading current media...
+[Decode] Thread stopped
+[Reload] Reloading: C:\Users\pmgteam\Documents\Codeblocks\dxwallpaper\bin\Debug\wallpaper.mp4
+[OK] Video format: NV12 (CPU conversion)
+[OK] Video: 1280x720 @ 62.5fps (frameDur=16ms)
+[Decode] Thread started
+[Reload] SUCCESS
+[Settings] Next track
+[Next] Track 0 -> 1
+[LoadMedia] Loading (2/3): C:\Users\pmgteam\Documents\Codeblocks\dxwallpaper\bin\Debug\wallpaper2.mp4
+[Decode] Thread stopped
+[OK] Video format: NV12 (CPU conversion)
+[OK] Video: 1280x720 @ 30.3fps (frameDur=33ms)
+[Decode] Thread started
+[LoadMedia] SUCCESS
+[Settings] Previous track
+[Prev] Track 1 -> 0
+[LoadMedia] Loading (1/3): C:\Users\pmgteam\Documents\Codeblocks\dxwallpaper\bin\Debug\wallpaper.mp4
+[Decode] Thread stopped
+[OK] Video format: NV12 (CPU conversion)
+[OK] Video: 1280x720 @ 62.5fps (frameDur=16ms)
+[Decode] Thread started
+[LoadMedia] SUCCESS
+[Settings] Dialog closed via X button
+[Tray] About
+[Tray] Exit
+
+[..] Shutting down...
+[Pipe] Server thread stopped
+[Pipe] Server stopped
+[..] Cleaning up...
+[OK] System tray icon removed
+[Decode] Thread stopped
+[OK] Cleanup complete
+[EXCEPTION] Total exceptions caught: 0
+[OK] Done!

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="MatePP-Manager" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc-msys2-mingw64" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/MatePP-Manager" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="0" />
+				<Option compiler="gcc-msys2-mingw64" />
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/MatePP-Manager" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="0" />
+				<Option compiler="gcc-msys2-mingw64" />
+			</Target>
+		</Build>
+		<Linker>
+			<Add library="gdi32" />
+			<Add library="user32" />
+			<Add library="kernel32" />
+			<Add library="comctl32" />
+			<Add library="ole32" />
+			<Add library="windowscodecs" />
+			<Add library="shlwapi" />
+		</Linker>
+		<Unit filename="src/main.cpp" />
+		<Extensions />
+	</Project>
+</CodeBlocks_project_file>
