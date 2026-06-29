@@ -117,15 +117,12 @@
 	<string>
 	<mutex>
 
-1782662867 source:c:\users\pmgteam\documents\codeblocks\matepp\src\main.cpp
+1782747425 source:c:\users\pmgteam\documents\codeblocks\matepp\src\main.cpp
 	<windows.h>
 	<d2d1.h>
 	<dwrite.h>
 	<dwmapi.h>
 	<wincodec.h>
-	<mfapi.h>
-	<mfidl.h>
-	<mfreadwrite.h>
 	<shlwapi.h>
 	<math.h>
 	<stdio.h>
@@ -169,4 +166,36 @@
 	<vector>
 	"common.h"
 	"settings.h"
+
+1782715029 c:\users\pmgteam\documents\codeblocks\matepp\include\audio_system.h
+	<windows.h>
+	<mfapi.h>
+	<mfidl.h>
+	<mfreadwrite.h>
+	<mmdeviceapi.h>
+	<audioclient.h>
+	<audiopolicy.h>
+	<mmsystem.h>
+
+1782715049 source:c:\users\pmgteam\documents\codeblocks\matepp\src\audio_system.cpp
+	"audio_system.h"
+	<stdio.h>
+	<stdlib.h>
+	<math.h>
+
+1782746625 source:c:\users\pmgteam\documents\codeblocks\matepp\src\video_decoder.cpp
+	<windows.h>
+	<d2d1.h>
+	<d3d11.h>
+	<dxgi1_2.h>
+	<mutex>
+	<cstdarg>
+	<algorithm>
+	<libavformat/avformat.h>
+	<libavcodec/avcodec.h>
+	<libavutil/imgutils.h>
+	<libavutil/pixfmt.h>
+	<libavutil/hwcontext.h>
+	<libavutil/hwcontext_d3d11va.h>
+	<libswscale/swscale.h>
 

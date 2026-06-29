@@ -1,5 +1,5 @@
-// wallpaper_demo.cpp - FIXED VERSION
-// D2D Wallpaper Engine - Fixed Next/Reload Access Violation + Fixed 0.5x slow playback
+// main.cpp - FFMPEG VERSION
+// D2D Wallpaper Engine - Using FFmpeg API for video playback
 
 #define UNICODE
 #define _UNICODE
@@ -10,9 +10,6 @@
 #include <dwrite.h>
 #include <dwmapi.h>
 #include <wincodec.h>
-#include <mfapi.h>
-#include <mfidl.h>
-#include <mfreadwrite.h>
 #include <shlwapi.h>
 #include <math.h>
 #include <stdio.h>
@@ -29,7 +26,7 @@
 #include <psapi.h>
 #include <signal.h>
 #include <setjmp.h>
-#include <mmsystem.h>  // timeBeginPeriod / timeEndPeriod
+#include <mmsystem.h>
 
 #include "common.h"
 #include "settings.h"
@@ -43,13 +40,13 @@
 #pragma comment(lib, "gdi32")
 #pragma comment(lib, "dwmapi")
 #pragma comment(lib, "windowscodecs")
-#pragma comment(lib, "mfplat")
-#pragma comment(lib, "mf")
-#pragma comment(lib, "mfreadwrite")
-#pragma comment(lib, "mfuuid")
 #pragma comment(lib, "shlwapi")
 #pragma comment(lib, "comctl32")
 #pragma comment(lib, "psapi")
+#pragma comment(lib, "avformat.lib")
+#pragma comment(lib, "avcodec.lib")
+#pragma comment(lib, "avutil.lib")
+#pragma comment(lib, "swscale.lib")
 
 // ============================================================
 //  System Tray Definitions
@@ -75,6 +72,15 @@
 #define IDI_MAIN_ICON 101
 
 // ============================================================
+//  Forward declarations from video_decoder.cpp
+// ============================================================
+extern bool LoadVideo(const wchar_t* path, ID2D1RenderTarget* rt);
+extern DWORD WINAPI DecodeThread(LPVOID);
+extern void StopDecodeThread();
+extern bool ReadVideoFrame();
+extern D2D1_RECT_F VidLetterbox(float sw, float sh);
+
+// ============================================================
 //  Forward declarations
 // ============================================================
 void LogToFile(const char* msg, ...);
@@ -88,7 +94,7 @@ template<typename T> inline void SafeRelease(T*& p) {
 }
 
 // ============================================================
-//  Globals - DEFINITIONS (non-static)
+//  Globals - DEFINITIONS (shared with video_decoder.cpp)
 // ============================================================
 ID2D1Factory*          g_pD2DFactory = NULL;
 ID2D1HwndRenderTarget* g_pRT         = NULL;
@@ -96,33 +102,27 @@ ID2D1SolidColorBrush*  g_pBrush      = NULL;
 IDWriteFactory*        g_pDWrite     = NULL;
 IDWriteTextFormat*     g_pTextFmt    = NULL;
 
-IMFSourceReader* g_pReader   = NULL;
 ID2D1Bitmap*     g_pVideoBmp = NULL;
 UINT  g_vidW=0, g_vidH=0;
 DWORD g_frameDur=33, g_lastTick=0;
 bool  g_vidLoaded=false, g_useVideo=false;
 std::mutex g_vidMtx;
-// g_rgbBuf: NULL = RGB32 direct, non-NULL = NV12 mode flag (actual conversion goes into pixBuf directly)
-bool g_isNV12 = false;  // FIX: replaces confusing g_rgbBuf-as-flag pattern
-BYTE* g_rgbBuf = NULL;  // kept for compat but unused as scratch; use g_isNV12 instead
 
 // Decode thread
-static HANDLE g_hDecodeThread   = NULL;
-static volatile bool g_decodeRunning = false;
+HANDLE g_hDecodeThread   = NULL;
+volatile bool g_decodeRunning = false;
 
-// CPU pixel double-buffer — decode thread writes, render thread uploads to D2D
-// Two BGRA buffers; decode writes to [back], render reads [front]
-static BYTE* g_pixBuf[2]        = {NULL, NULL};
-static int   g_pixBack          = 0;    // index decode thread writes to
-static std::mutex   g_pixMtx;          // protects swap
-static volatile bool g_newFrameReady = false;
-static HANDLE g_hFrameConsumed = NULL; // render set sau khi consume, decode wait trên đây
+// CPU pixel double-buffer
+BYTE* g_pixBuf[2]        = {NULL, NULL};
+int   g_pixBack          = 0;
+std::mutex   g_pixMtx;
+volatile bool g_newFrameReady = false;
+HANDLE g_hFrameConsumed = NULL;
 
-// Timing anchor (set by decode thread)
-// FIX: g_qpfFreq must be initialised before decode thread starts
-static LONGLONG g_vidStartWall = 0;
-static LONGLONG g_vidStartTS   = 0;
-static LARGE_INTEGER g_qpfFreq = {0};
+// Timing anchor
+LONGLONG g_vidStartWall = 0;
+LONGLONG g_vidStartTS   = 0;
+LARGE_INTEGER g_qpfFreq = {0};
 
 // System Tray globals
 NOTIFYICONDATAW g_nid = {0};
@@ -130,7 +130,7 @@ bool g_trayIconCreated = false;
 HWND g_hMainWnd = NULL;
 HWND g_hTrayWnd = NULL;
 
-// Media control globals - DEFINITIONS
+// Media control globals
 bool g_isPaused = false;
 float g_volume = 1.0f;
 bool g_isMuted = false;
@@ -379,7 +379,6 @@ static volatile bool g_running = true;
 static float g_time = 0;
 static std::mutex g_renderMtx;
 static bool g_comInit = false;
-static bool g_mfInit = false;
 
 // ============================================================
 //  Helper Functions
@@ -387,13 +386,14 @@ static bool g_mfInit = false;
 static bool IsVideoFile(const wchar_t* path) {
     if(!path) return false;
     const wchar_t* exts[] = {L".mp4", L".avi", L".wmv", L".mkv",
-                             L".mov", L".webm", L".m4v"};
+                             L".mov", L".webm", L".m4v", L".flv",
+                             L".ts", L".m2ts", L".3gp", L".ogg", L".ogv"};
     wchar_t ext[16] = {0};
     const wchar_t* d = wcsrchr(path, L'.');
     if(!d) return false;
     wcscpy_s(ext, d);
     CharLowerW(ext);
-    for(int i = 0; i < 7; i++) {
+    for(int i = 0; i < 15; i++) {
         if(wcscmp(ext, exts[i]) == 0) return true;
     }
     return false;
@@ -450,389 +450,6 @@ static void RemoveTrayIcon() {
 }
 
 // ============================================================
-//  Video Loader Functions
-// ============================================================
-static void NV12toRGB32(BYTE* src, BYTE* dst, UINT w, UINT h) {
-    if (!src || !dst) return;
-    BYTE* Y  = src;
-    BYTE* UV = src + w * h;
-    for (UINT y = 0; y < h; y++) {
-        BYTE* uvLine  = UV + (y / 2) * w;
-        BYTE* dstLine = dst + y * w * 4;
-        BYTE* yLine   = Y  + y * w;
-        for (UINT x = 0; x < w; x++) {
-            int yy = yLine[x];
-            int u  = uvLine[x & ~1]       - 128;
-            int v  = uvLine[(x & ~1) + 1] - 128;
-            int r = yy + v + (v >> 2) + (v >> 3) + (v >> 5);
-            int g = yy - (u >> 2) - (u >> 4) - (v >> 1) - (v >> 3) - (v >> 4);
-            int b = yy + u + (u >> 1) + (u >> 2) + (u >> 5);
-            if (r < 0) r = 0; if (r > 255) r = 255;
-            if (g < 0) g = 0; if (g > 255) g = 255;
-            if (b < 0) b = 0; if (b > 255) b = 255;
-            UINT i = x * 4;
-            dstLine[i] = b; dstLine[i+1] = g; dstLine[i+2] = r; dstLine[i+3] = 255;
-        }
-    }
-}
-
-static DWORD WINAPI DecodeThread(LPVOID); // forward decl
-
-static void StopDecodeThread() {
-    if (g_hDecodeThread) {
-        g_vidLoaded = false;
-        g_decodeRunning = false;
-        // Unblock decode thread nếu đang chờ g_hFrameConsumed
-        if (g_hFrameConsumed) SetEvent(g_hFrameConsumed);
-        if (WaitForSingleObject(g_hDecodeThread, 500) == WAIT_TIMEOUT) {
-            TerminateThread(g_hDecodeThread, 0);
-            LogToFile("[Decode] Thread forcibly terminated");
-        }
-        CloseHandle(g_hDecodeThread);
-        g_hDecodeThread = NULL;
-    }
-    g_newFrameReady = false;
-}
-
-// ============================================================
-//  FIX: GetWallTime100ns — integer math, no float drift
-// ============================================================
-static LONGLONG GetWallTime100ns() {
-    LARGE_INTEGER now;
-    QueryPerformanceCounter(&now);
-    // Integer arithmetic: avoids accumulated float error over long videos
-    // now.QuadPart * 10000000 / freq  →  100ns units
-    return now.QuadPart * 10000000LL / g_qpfFreq.QuadPart;
-}
-
-static bool LoadVideo(const wchar_t* path, ID2D1RenderTarget* rt) {
-    if (!path || !rt) {
-        LogToFile("[ERR] LoadVideo: Invalid parameters");
-        return false;
-    }
-
-    try {
-        std::lock_guard<std::mutex> lk(g_vidMtx);
-
-        SafeRelease(g_pVideoBmp);
-        free(g_pixBuf[0]); g_pixBuf[0] = NULL;
-        free(g_pixBuf[1]); g_pixBuf[1] = NULL;
-        SafeRelease(g_pReader);
-        if(g_rgbBuf) { free(g_rgbBuf); g_rgbBuf = NULL; }
-        g_isNV12 = false;
-        g_vidLoaded = false;
-
-        if (!g_mfInit) {
-            HRESULT hr = MFStartup(MF_VERSION);
-            if (FAILED(hr)) {
-                LogToFile("[ERR] MFStartup: 0x%08X", (unsigned)hr);
-                return false;
-            }
-            g_mfInit = true;
-        }
-
-        HRESULT hr = MFCreateSourceReaderFromURL(path, NULL, &g_pReader);
-        if (FAILED(hr)) {
-            LogToFile("[ERR] Open: 0x%08X", (unsigned)hr);
-            return false;
-        }
-
-        IMFMediaType* pNativeType = NULL;
-        DWORD si = 0;
-        bool found = false;
-        for (DWORD i = 0; i < 10; i++) {
-            hr = g_pReader->GetNativeMediaType(MF_SOURCE_READER_FIRST_VIDEO_STREAM + i, i, &pNativeType);
-            if (SUCCEEDED(hr) && pNativeType) {
-                GUID mj;
-                if (SUCCEEDED(pNativeType->GetGUID(MF_MT_MAJOR_TYPE, &mj)) && mj == MFMediaType_Video) {
-                    found = true;
-                    si = i;
-                    break;
-                }
-                SafeRelease(pNativeType);
-            }
-        }
-        if (!found) {
-            LogToFile("[ERR] No video stream found");
-            SafeRelease(g_pReader);
-            return false;
-        }
-
-        UINT32 ow = 0, oh = 0;
-        MFGetAttributeSize(pNativeType, MF_MT_FRAME_SIZE, &ow, &oh);
-        UINT32 n = 0, d = 1;
-        MFGetAttributeRatio(pNativeType, MF_MT_FRAME_RATE, &n, &d);
-        SafeRelease(pNativeType);
-
-        g_frameDur = (n && d) ? (DWORD)(1000.0 * d / n) : 33;
-        if (g_frameDur < 8) g_frameDur = 8;
-
-        UINT maxDim = 1366;
-        if (ow <= maxDim && oh <= maxDim) {
-            g_vidW = ow;
-            g_vidH = oh;
-        } else {
-            float s = (ow > oh) ? (float)maxDim / ow : (float)maxDim / oh;
-            g_vidW = (UINT)(ow * s) & ~1;
-            g_vidH = (UINT)(oh * s) & ~1;
-        }
-
-        bool useRGB32 = false;
-        IMFMediaType* pOut = NULL;
-        MFCreateMediaType(&pOut);
-        pOut->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Video);
-        pOut->SetGUID(MF_MT_SUBTYPE, MFVideoFormat_RGB32);
-        MFSetAttributeSize(pOut, MF_MT_FRAME_SIZE, g_vidW, g_vidH);
-
-        hr = g_pReader->SetCurrentMediaType(MF_SOURCE_READER_FIRST_VIDEO_STREAM + si, NULL, pOut);
-        SafeRelease(pOut);
-
-        if (SUCCEEDED(hr)) {
-            useRGB32 = true;
-            g_isNV12 = false;
-            LogToFile("[OK] Video format: RGB32 (direct)");
-        } else {
-            IMFMediaType* pOutNV12 = NULL;
-            MFCreateMediaType(&pOutNV12);
-            pOutNV12->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Video);
-            pOutNV12->SetGUID(MF_MT_SUBTYPE, MFVideoFormat_NV12);
-            MFSetAttributeSize(pOutNV12, MF_MT_FRAME_SIZE, g_vidW, g_vidH);
-
-            hr = g_pReader->SetCurrentMediaType(MF_SOURCE_READER_FIRST_VIDEO_STREAM + si, NULL, pOutNV12);
-            SafeRelease(pOutNV12);
-
-            if (FAILED(hr)) {
-                g_vidW = ow;
-                g_vidH = oh;
-                MFCreateMediaType(&pOutNV12);
-                pOutNV12->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Video);
-                pOutNV12->SetGUID(MF_MT_SUBTYPE, MFVideoFormat_NV12);
-                hr = g_pReader->SetCurrentMediaType(MF_SOURCE_READER_FIRST_VIDEO_STREAM + si, NULL, pOutNV12);
-                SafeRelease(pOutNV12);
-                if (FAILED(hr)) {
-                    LogToFile("[ERR] NV12: 0x%08X", (unsigned)hr);
-                    SafeRelease(g_pReader);
-                    return false;
-                }
-            }
-            g_isNV12 = true;
-            LogToFile("[OK] Video format: NV12 (CPU conversion)");
-        }
-
-        D2D1_SIZE_U sz = D2D1::SizeU(g_vidW, g_vidH);
-        D2D1_BITMAP_PROPERTIES bp = D2D1::BitmapProperties(
-            D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_IGNORE));
-        hr = rt->CreateBitmap(sz, NULL, 0, bp, &g_pVideoBmp);
-        if (FAILED(hr)) {
-            LogToFile("[ERR] CreateBitmap: 0x%08X", (unsigned)hr);
-            SafeRelease(g_pReader);
-            return false;
-        }
-
-        // Alloc two CPU BGRA pixel double-buffers for decode thread
-        // NV12 converts directly into pixBuf — no separate scratch needed
-        UINT bufSize = g_vidW * g_vidH * 4;
-        g_pixBuf[0] = (BYTE*)calloc(bufSize, 1);
-        g_pixBuf[1] = (BYTE*)calloc(bufSize, 1);
-        if (!g_pixBuf[0] || !g_pixBuf[1]) {
-            LogToFile("[ERR] pixel buffer alloc failed");
-            free(g_pixBuf[0]); g_pixBuf[0] = NULL;
-            free(g_pixBuf[1]); g_pixBuf[1] = NULL;
-            SafeRelease(g_pVideoBmp);
-            SafeRelease(g_pReader);
-            return false;
-        }
-        g_pixBack = 0;
-
-        // ============================================================
-        // FIX: Init QPF and anchors BEFORE starting decode thread
-        // If g_qpfFreq is 0 when GetWallTime100ns() runs → div-by-zero
-        // → wallElapsed = garbage → delta = full mediaPts → sleep entire
-        // media timestamp each frame → video plays at ~0x speed
-        // ============================================================
-        QueryPerformanceFrequency(&g_qpfFreq);
-        if (g_qpfFreq.QuadPart == 0) {
-            LogToFile("[WARN] QueryPerformanceFrequency returned 0, using fallback");
-            g_qpfFreq.QuadPart = 10000000LL;
-        }
-        g_vidStartWall  = 0;
-        g_vidStartTS    = 0;
-        g_newFrameReady = false;
-        g_vidLoaded     = true;
-        g_lastTick      = GetTickCount();
-
-        // Init frame-consumed event (auto-reset, init signaled → decode bắt đầu ngay)
-        if (!g_hFrameConsumed)
-            g_hFrameConsumed = CreateEvent(NULL, FALSE, TRUE, NULL);
-        else
-            SetEvent(g_hFrameConsumed); // reset về signaled nếu tái dùng
-
-        // Start dedicated decode thread
-        g_decodeRunning = true;
-        g_hDecodeThread = CreateThread(NULL, 0, DecodeThread, NULL, 0, NULL);
-
-        LogToFile("[OK] Video: %ux%u @ %.1ffps (frameDur=%ums)",
-                  g_vidW, g_vidH, 1000.0/g_frameDur, g_frameDur);
-        return true;
-    } catch(...) {
-        LogToFile("[EXCEPTION] LoadVideo");
-        InterlockedIncrement(&g_exceptionCount);
-        return false;
-    }
-}
-
-// ============================================================
-//  FIX: DecodeOneFrame — WaitableTimer pacing, no spin, no double-sleep
-// ============================================================
-static bool DecodeOneFrame(HANDLE hPaceTimer) {
-    if (!g_vidLoaded || !g_pReader || !g_decodeRunning) return false;
-
-    IMFSample* pSamp = NULL;
-    DWORD si = 0, fl = 0;
-    LONGLONG ts = 0;
-
-    HRESULT hr = g_pReader->ReadSample(
-        MF_SOURCE_READER_FIRST_VIDEO_STREAM, 0, &si, &fl, &ts, &pSamp);
-    if (FAILED(hr)) return false;
-
-    if (fl & MF_SOURCE_READERF_ENDOFSTREAM) {
-        SafeRelease(pSamp);
-        if (g_isLooping) {
-            PROPVARIANT v; PropVariantInit(&v);
-            v.vt = VT_I8; v.hVal.QuadPart = 0;
-            g_pReader->SetCurrentPosition(GUID_NULL, v);
-            PropVariantClear(&v);
-            g_vidStartWall = 0;
-            g_vidStartTS   = 0;
-        }
-        return false;
-    }
-
-    if (!pSamp || (fl & MF_SOURCE_READERF_STREAMTICK)) {
-        SafeRelease(pSamp);
-        return false;
-    }
-
-    if (g_vidStartWall == 0) {
-        g_vidStartWall = GetWallTime100ns();
-        g_vidStartTS   = ts;
-    }
-
-    LONGLONG mediaPts    = ts - g_vidStartTS;
-    LONGLONG wallElapsed = GetWallTime100ns() - g_vidStartWall;
-    LONGLONG delta       = mediaPts - wallElapsed; // 100ns units
-
-    // WaitableTimer accurate ~1ms với timeBeginPeriod(1) — không spin, không đốt CPU
-    if (delta > 5000LL && hPaceTimer) { // > 0.5ms mới đáng wait
-        LARGE_INTEGER due;
-        due.QuadPart = -delta; // negative = relative, đơn vị 100ns
-        SetWaitableTimer(hPaceTimer, &due, 0, NULL, NULL, FALSE);
-        DWORD waitMs = (DWORD)(delta / 10000LL) + 2; // +2ms buffer cho scheduler
-        if (waitMs > 500) waitMs = 500;
-        WaitForSingleObject(hPaceTimer, waitMs);
-    }
-    // delta <= 0: frame trễ hoặc đúng giờ — decode ngay
-
-    // Decode into back CPU buffer
-    IMFMediaBuffer* pBuf = NULL;
-    hr = pSamp->ConvertToContiguousBuffer(&pBuf);
-    bool ok = false;
-
-    if (SUCCEEDED(hr) && pBuf) {
-        BYTE* pData = NULL; DWORD ml = 0, cl = 0;
-        hr = pBuf->Lock(&pData, &ml, &cl);
-        if (SUCCEEDED(hr) && pData && cl > 0) {
-            BYTE* dst = g_pixBuf[g_pixBack];
-            if (dst) {
-                if (g_isNV12) {
-                    // NV12 → BGRA directly into pixBuf[back] — no separate scratch
-                    NV12toRGB32(pData, dst, g_vidW, g_vidH);
-                } else {
-                    memcpy(dst, pData, g_vidW * g_vidH * 4);
-                }
-                {
-                    std::lock_guard<std::mutex> lk(g_pixMtx);
-                    g_pixBack = 1 - g_pixBack;
-                    g_newFrameReady = true;
-                }
-                ok = true;
-            }
-        }
-        pBuf->Unlock();
-        SafeRelease(pBuf);
-    }
-
-    SafeRelease(pSamp);
-    return ok;
-}
-
-// ============================================================
-//  FIX: DecodeThread — timeBeginPeriod + WaitableTimer pacing
-// ============================================================
-static DWORD WINAPI DecodeThread(LPVOID) {
-    timeBeginPeriod(1); // boost timer resolution → Sleep/WaitableTimer accurate ~1ms
-    LogToFile("[Decode] Thread started");
-
-    // Per-thread waitable timer cho pacing — manual-reset, one-shot
-    HANDLE hPaceTimer = CreateWaitableTimer(NULL, TRUE, NULL);
-    if (!hPaceTimer) {
-        LogToFile("[WARN] CreateWaitableTimer failed, falling back to Sleep pacing");
-    }
-
-    while (g_decodeRunning) {
-        if (g_isPaused || !g_vidLoaded) {
-            Sleep(10);
-            continue;
-        }
-
-        // Render chưa consume frame cũ — đợi event thay vì spin/Sleep(1)
-        // Timeout = frameDur+5ms để không bị stuck nếu render thread chết
-        if (g_newFrameReady) {
-            if (g_hFrameConsumed)
-                WaitForSingleObject(g_hFrameConsumed, g_frameDur + 5);
-            else
-                Sleep(1);
-            continue;
-        }
-
-        bool ok = DecodeOneFrame(hPaceTimer);
-        if (!ok) Sleep(5);
-    }
-
-    if (hPaceTimer) CloseHandle(hPaceTimer);
-    timeEndPeriod(1);
-    LogToFile("[Decode] Thread stopped");
-    return 0;
-}
-
-// Called from render thread — uploads ready CPU pixel buffer into D2D bitmap
-static bool ReadVideoFrame() {
-    if (!g_newFrameReady || !g_pVideoBmp) return false;
-    int front;
-    {
-        std::lock_guard<std::mutex> lk(g_pixMtx);
-        if (!g_newFrameReady) return false;
-        front = 1 - g_pixBack;
-        g_newFrameReady = false;
-    }
-    BYTE* src = g_pixBuf[front];
-    if (!src) return false;
-    D2D1_RECT_U r = D2D1::RectU(0, 0, g_vidW, g_vidH);
-    g_pVideoBmp->CopyFromMemory(&r, src, g_vidW * 4);
-    // Signal decode thread: buffer đã được consume, có thể decode frame tiếp
-    if (g_hFrameConsumed) SetEvent(g_hFrameConsumed);
-    return true;
-}
-
-static D2D1_RECT_F VidLetterbox(float sw, float sh) {
-    if(!g_vidW || !g_vidH) return D2D1::RectF(0, 0, sw, sh);
-    float sx = sw / g_vidW, sy = sh / g_vidH, sc = (sx < sy) ? sx : sy;
-    float dw = g_vidW * sc, dh = g_vidH * sc;
-    return D2D1::RectF((sw - dw) * .5f, (sh - dh) * .5f,
-                      (sw + dw) * .5f, (sh + dh) * .5f);
-}
-
-// ============================================================
 //  Playlist Management
 // ============================================================
 void ScanPlaylist(const wchar_t* directory) {
@@ -859,10 +476,11 @@ void ScanPlaylist(const wchar_t* directory) {
 
                         const wchar_t* videoExts[] = {
                             L".mp4", L".avi", L".wmv", L".mkv",
-                            L".mov", L".webm", L".m4v", L".gif"
+                            L".mov", L".webm", L".m4v", L".gif",
+                            L".flv", L".ts", L".m2ts", L".3gp", L".ogg", L".ogv"
                         };
 
-                        for (int i = 0; i < 8; i++) {
+                        for (int i = 0; i < 14; i++) {
                             if (wcscmp(extLower, videoExts[i]) == 0) {
                                 wchar_t fullPath[MAX_PATH];
                                 wcscpy(fullPath, directory);
@@ -888,7 +506,7 @@ void ScanPlaylist(const wchar_t* directory) {
 }
 
 // ============================================================
-//  CRITICAL FIX: Safe Load Media with lock
+//  LoadMediaByIndex
 // ============================================================
 bool LoadMediaByIndex(int index) {
     if (g_isLoading) {
@@ -916,9 +534,6 @@ bool LoadMediaByIndex(int index) {
             SafeRelease(g_pVideoBmp);
             free(g_pixBuf[0]); g_pixBuf[0] = NULL;
             free(g_pixBuf[1]); g_pixBuf[1] = NULL;
-            SafeRelease(g_pReader);
-            if (g_rgbBuf) { free(g_rgbBuf); g_rgbBuf = NULL; }
-            g_isNV12 = false;
 
             g_gif.Release();
             g_vidLoaded = false;
@@ -1028,9 +643,6 @@ void ReloadCurrentMedia() {
             SafeRelease(g_pVideoBmp);
             free(g_pixBuf[0]); g_pixBuf[0] = NULL;
             free(g_pixBuf[1]); g_pixBuf[1] = NULL;
-            SafeRelease(g_pReader);
-            if (g_rgbBuf) { free(g_rgbBuf); g_rgbBuf = NULL; }
-            g_isNV12 = false;
             g_gif.Release();
             g_vidLoaded = false;
             g_useVideo  = false;
@@ -1113,7 +725,6 @@ static void ShowContextMenu(HWND hwnd) {
                 ID_TRAY_TOP_MOST, L"Always on Top");
     AppendMenuW(hMenu, MF_POPUP, (UINT_PTR)hDisplayMenu, L"Display");
 
-    // --- Performance submenu (Debug Text) ---
     HMENU hPerfMenu = CreatePopupMenu();
     AppendMenuW(hPerfMenu, MF_STRING | (g_showDebugText ? MF_CHECKED : 0),
                 ID_TRAY_DEBUG_TOGGLE, L"Show Debug Text");
@@ -1403,21 +1014,26 @@ static void RenderFrame() {
     try {
         if(!g_pRT) return;
 
-        std::lock_guard<std::mutex> lk(g_renderMtx);
-
-        int sw = GetSystemMetrics(SM_CXSCREEN), sh = GetSystemMetrics(SM_CYSCREEN);
-        if(!sw || !sh) return;
-
-        // Upload new frame if ready (works whether paused or not — last frame stays visible)
+        // Chỉ lock khi đọc frame mới, unlock ngay sau đó
         if(g_useVideo && g_vidLoaded) {
             ReadVideoFrame();
+        }
+
+        // Lock render resource vùng tối thiểu
+        g_renderMtx.lock();
+
+        int sw = GetSystemMetrics(SM_CXSCREEN), sh = GetSystemMetrics(SM_CYSCREEN);
+        if(!sw || !sh) {
+            g_renderMtx.unlock();
+            return;
         }
 
         g_pRT->BeginDraw();
         g_pRT->Clear(D2D1::ColorF(0, 0, 0, 1));
 
         if(g_useVideo && g_vidLoaded && g_pVideoBmp) {
-            g_pRT->DrawBitmap(g_pVideoBmp, VidLetterbox((float)sw, (float)sh), 1.0f, D2D1_BITMAP_INTERPOLATION_MODE_LINEAR);
+            D2D1_RECT_F rect = VidLetterbox((float)sw, (float)sh);
+            g_pRT->DrawBitmap(g_pVideoBmp, rect, 1.0f, D2D1_BITMAP_INTERPOLATION_MODE_LINEAR);
         } else if(g_gif.loaded) {
             g_gif.Update();
             g_gif.Draw(g_pRT, g_gif.Letterbox((float)sw, (float)sh));
@@ -1434,11 +1050,7 @@ static void RenderFrame() {
                            D2D1::RectF(cx-400, cy-20, cx+400, cy+20), g_pBrush);
         }
 
-        // ============================================================
-        // DEBUG TEXT RENDER
-        // ============================================================
         if (g_showDebugText && g_pDebugTextFmt && g_pDebugBrush) {
-            // FPS
             g_frameCount++;
             double now = (double)GetTickCount() / 1000.0;
             if (now - g_lastFPSTime >= 1.0) {
@@ -1447,7 +1059,6 @@ static void RenderFrame() {
                 g_lastFPSTime = now;
             }
 
-            // CPU usage (chính xác)
             double cpuUsage = 0.0;
             FILETIME creation, exit, kernel, user;
             if (GetProcessTimes(GetCurrentProcess(), &creation, &exit, &kernel, &user)) {
@@ -1456,10 +1067,8 @@ static void RenderFrame() {
                 u.LowPart = user.dwLowDateTime;   u.HighPart = user.dwHighDateTime;
                 ULARGE_INTEGER curCPU;
                 curCPU.QuadPart = k.QuadPart + u.QuadPart;
-
                 ULARGE_INTEGER curWall;
                 GetSystemTimeAsFileTime((FILETIME*)&curWall);
-
                 if (g_cpuInit) {
                     LONGLONG cpuDelta = curCPU.QuadPart - g_prevCPU.QuadPart;
                     LONGLONG wallDelta = curWall.QuadPart - g_prevWall.QuadPart;
@@ -1478,10 +1087,8 @@ static void RenderFrame() {
             wchar_t debugStr[512];
             swprintf_s(debugStr,
                 L"FPS: %.1f\nCPU: %.1f%%\nRes: %dx%d\nVideo: %s\nPaused: %s\nLoop: %s\nFrameDur: %dms",
-                g_fps,
-                cpuUsage,
-                g_useVideo ? g_vidW : g_gif.w,
-                g_useVideo ? g_vidH : g_gif.h,
+                g_fps, cpuUsage,
+                g_useVideo ? g_vidW : g_gif.w, g_useVideo ? g_vidH : g_gif.h,
                 g_vidLoaded ? (g_useVideo ? L"Video" : L"GIF") : L"None",
                 g_isPaused ? L"Yes" : L"No",
                 g_isLooping ? L"ON" : L"OFF",
@@ -1490,35 +1097,33 @@ static void RenderFrame() {
             D2D1_RECT_F bgRect = D2D1::RectF(8.0f, 8.0f, 300.0f, 160.0f);
             g_pDebugBrush->SetColor(D2D1::ColorF(0, 0, 0, 0.6f));
             g_pRT->FillRectangle(bgRect, g_pDebugBrush);
-
-            D2D1_RECT_F textRect = D2D1::RectF(12.0f, 12.0f, 300.0f, 160.0f);
             g_pDebugBrush->SetColor(D2D1::ColorF(0.0f, 1.0f, 0.0f, 1.0f));
-            g_pRT->DrawText(debugStr, (UINT)wcslen(debugStr), g_pDebugTextFmt, textRect, g_pDebugBrush);
+            g_pRT->DrawText(debugStr, (UINT)wcslen(debugStr), g_pDebugTextFmt,
+                           D2D1::RectF(12.0f, 12.0f, 300.0f, 160.0f), g_pDebugBrush);
         }
 
         HRESULT hr = g_pRT->EndDraw();
+        g_renderMtx.unlock();
+
         if(FAILED(hr)) {
             LogToFile("[Render] EndDraw failed: 0x%08X", (unsigned)hr);
         }
     } catch(...) {
         LogToFile("[EXCEPTION] RenderFrame");
         InterlockedIncrement(&g_exceptionCount);
-        if(g_pRT) {
-            try { g_pRT->EndDraw(); } catch(...) {}
-        }
+        g_renderMtx.unlock();
     }
 }
 
+// Render thread - UNLOCKED
+// Trong main.cpp, sửa RenderThread:
 static DWORD WINAPI RenderThread(LPVOID) {
     try {
+        SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_HIGHEST);
+
         LARGE_INTEGER f, p, n;
         QueryPerformanceFrequency(&f);
         QueryPerformanceCounter(&p);
-
-        HANDLE hTimer = CreateWaitableTimer(NULL, FALSE, NULL);
-        LARGE_INTEGER liDue;
-        liDue.QuadPart = -166667LL; // 60fps in 100ns units
-        if (hTimer) SetWaitableTimer(hTimer, &liDue, 1000/60, NULL, NULL, FALSE);
 
         while(g_running) {
             QueryPerformanceCounter(&n);
@@ -1527,10 +1132,9 @@ static DWORD WINAPI RenderThread(LPVOID) {
 
             RenderFrame();
 
-            if (hTimer) WaitForSingleObject(hTimer, 32);
+            // NO SLEEP - chạy max speed, GPU tự lo
         }
 
-        if (hTimer) CloseHandle(hTimer);
         return 0;
     } catch(...) {
         LogToFile("[EXCEPTION] RenderThread");
@@ -1538,7 +1142,6 @@ static DWORD WINAPI RenderThread(LPVOID) {
         return 1;
     }
 }
-
 // ============================================================
 //  Cleanup
 // ============================================================
@@ -1548,16 +1151,18 @@ static void Cleanup() {
         LogToFile("[..] Cleaning up...");
 
         CloseSettingsDialog();
-        RemoveTrayIcon();
+
+        // Dừng decode thread TRƯỚC
         StopDecodeThread();
+
+        RemoveTrayIcon();
 
         g_renderMtx.lock();
         g_gif.Release();
         SafeRelease(g_pVideoBmp);
         free(g_pixBuf[0]); g_pixBuf[0] = NULL;
         free(g_pixBuf[1]); g_pixBuf[1] = NULL;
-        SafeRelease(g_pReader);
-        if(g_rgbBuf) { free(g_rgbBuf); g_rgbBuf = NULL; }
+
         SafeRelease(g_pBrush);
         SafeRelease(g_pTextFmt);
         SafeRelease(g_pDWrite);
@@ -1567,9 +1172,7 @@ static void Cleanup() {
         SafeRelease(g_pDebugTextFmt);
         g_renderMtx.unlock();
 
-        if(g_mfInit) { MFShutdown(); g_mfInit = false; }
-        if(g_comInit) { CoUninitialize(); g_comInit = false; }
-
+        // Đóng event handles SAU KHI thread đã dừng
         if (g_hFrameConsumed) {
             CloseHandle(g_hFrameConsumed);
             g_hFrameConsumed = NULL;
@@ -1603,7 +1206,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     if(setjmp(g_jumpBuffer) == 0) {
         try {
             LogToFile("===================================================");
-            LogToFile("Mate++ Wallpaper Engine D2D v2.0 Starting...");
+            LogToFile("Mate++ Wallpaper Engine D2D v2.0 (FFmpeg) Starting...");
             LogToFile("Exception Handling: C++ try/catch + Signal Handlers");
             LogToFile("===================================================");
 
