@@ -1,4 +1,7 @@
 # depslib dependency file v1.0
+1782556160 source:c:\users\pmgteam\documents\codeblocks\matepp-manager\resources.rc
+	<windows.h>
+
 1782556206 source:c:\users\pmgteam\documents\codeblocks\matepp-manager\src\main.cpp
 	<windows.h>
 	<windowsx.h>
@@ -16,7 +19,4 @@
 	<thread>
 	<mutex>
 	<atomic>
-
-1782556160 source:c:\users\pmgteam\documents\codeblocks\matepp-manager\resources.rc
-	<windows.h>
 
