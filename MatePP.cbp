@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="MatePP" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc-msys2-mingw64" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/mpp" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="0" />
+				<Option compiler="gcc-msys2-mingw64" />
+				<Compiler>
+					<Add option="-fexceptions" />
+					<Add directory="include" />
+				</Compiler>
+				<Linker>
+					<Add library="d2d1" />
+					<Add library="dwrite" />
+					<Add library="ole32" />
+					<Add library="dwmapi" />
+					<Add library="user32" />
+					<Add library="gdi32" />
+					<Add library="windowscodecs" />
+					<Add library="mfplat" />
+					<Add library="mf" />
+					<Add library="mfreadwrite" />
+					<Add library="mfuuid" />
+					<Add library="shlwapi" />
+					<Add library="uuid" />
+					<Add library="dxgi" />
+					<Add library="d3d11" />
+					<Add library="d3dcompiler" />
+					<Add library="winmm" />
+					<Add library="avformat" />
+					<Add library="avcodec" />
+					<Add library="avutil" />
+					<Add library="avutil" />
+					<Add library="swscale" />
+				</Linker>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/mpp" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="0" />
+				<Option compiler="gcc-msys2-mingw64" />
+				<Compiler>
+					<Add directory="include" />
+				</Compiler>
+			</Target>
+		</Build>
+		<Linker>
+			<Add option="-mwindows" />
+			<Add library="d2d1" />
+			<Add library="dwrite" />
+			<Add library="ole32" />
+			<Add library="user32" />
+			<Add library="gdi32" />
+			<Add library="dwmapi" />
+			<Add library="windowscodecs" />
+			<Add library="mfplat" />
+			<Add library="mf" />
+			<Add library="mfreadwrite" />
+			<Add library="mfuuid" />
+			<Add library="shlwapi" />
+			<Add library="uuid" />
+			<Add library="comctl32" />
+		</Linker>
+		<Unit filename="app.ico" />
+		<Unit filename="include/about.h" />
+		<Unit filename="include/audio_system.h" />
+		<Unit filename="include/common.h" />
+		<Unit filename="include/pipe_server.h" />
+		<Unit filename="include/settings.h" />
+		<Unit filename="include/video_decoder.h" />
+		<Unit filename="mpp.exe.manifest" />
+		<Unit filename="resources.rc">
+			<Option compilerVar="WINDRES" />
+		</Unit>
+		<Unit filename="src/about.cpp" />
+		<Unit filename="src/audio_system.cpp" />
+		<Unit filename="src/main.cpp" />
+		<Unit filename="src/pipe_server.cpp" />
+		<Unit filename="src/settings.cpp" />
+		<Unit filename="src/video_decoder.cpp" />
+		<Extensions />
+	</Project>
+</CodeBlocks_project_file>

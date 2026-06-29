@@ -1,0 +1,124 @@
+#include <windows.h>
+#include <commctrl.h>
+
+// ============================================================
+//  Resource IDs
+// ============================================================
+#define IDI_MAIN_ICON           101
+#define IDD_SIMPLE_SETTINGS     100
+#define IDC_VOLUME_SLIDER       1002
+#define IDC_VOLUME_LABEL        1003
+#define IDC_LOOP_CHECK          1004
+#define IDC_TOP_MOST_CHECK      1005
+#define IDC_PLAY_PAUSE_BTN      1006
+#define IDC_NEXT_BTN            1007
+#define IDC_PREV_BTN            1008
+#define IDC_RELOAD_BTN          1009
+#define IDC_MUTE_BTN            1012
+
+// About dialog
+#define IDD_ABOUT               101
+#define IDC_ABOUT_CLOSE         2001
+
+// ============================================================
+//  Resources
+// ============================================================
+
+// Icon
+IDI_MAIN_ICON ICON "app.ico"
+
+// Manifest
+1 24 "mpp.exe.manifest"
+
+// Version Info
+VS_VERSION_INFO VERSIONINFO
+FILEVERSION    1,0,0,0
+PRODUCTVERSION 1,0,0,0
+FILEFLAGSMASK  VS_FFI_FILEFLAGSMASK
+#ifdef _DEBUG
+FILEFLAGS      VS_FF_DEBUG
+#else
+FILEFLAGS      0x0L
+#endif
+FILEOS         VOS__WINDOWS32
+FILETYPE       VFT_APP
+FILESUBTYPE    VFT2_UNKNOWN
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "CompanyName",      "PmgTeam\0"
+            VALUE "FileDescription",  "Mate++ - Live Wallpaper & Desktop Customization Tool\0"
+            VALUE "FileVersion",      "1.0.0.0\0"
+            VALUE "InternalName",     "mpp\0"
+            VALUE "LegalCopyright",   "Free to Use & Open-Source. Developed by PmgTeam.\0"
+            VALUE "OriginalFilename", "mpp.exe\0"
+            VALUE "ProductName",      "Mate++\0"
+            VALUE "ProductVersion",   "1.0.0.0\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+// ============================================================
+//  Dialog Resources
+// ============================================================
+IDD_SIMPLE_SETTINGS DIALOGEX 0, 0, 350, 220
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Mate++ Settings"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "Volume:", -1, 20, 20, 50, 15, SS_LEFT
+    CONTROL         "", IDC_VOLUME_SLIDER, "msctls_trackbar32",
+                    WS_CHILD | WS_VISIBLE | TBS_HORZ | TBS_AUTOTICKS,
+                    70, 15, 200, 30
+    LTEXT           "100%", IDC_VOLUME_LABEL, 280, 20, 40, 15, SS_CENTER
+
+    CONTROL         "Loop Playlist", IDC_LOOP_CHECK, "BUTTON",
+                    WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX,
+                    20, 60, 120, 20
+    CONTROL         "Always on Top", IDC_TOP_MOST_CHECK, "BUTTON",
+                    WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX,
+                    150, 60, 120, 20
+
+    PUSHBUTTON      "Pause", IDC_PLAY_PAUSE_BTN, 20, 100, 70, 25
+    PUSHBUTTON      "Next", IDC_NEXT_BTN, 100, 100, 70, 25
+    PUSHBUTTON      "Prev", IDC_PREV_BTN, 180, 100, 70, 25
+    PUSHBUTTON      "Reload", IDC_RELOAD_BTN, 260, 100, 70, 25
+
+    PUSHBUTTON      "Mute", IDC_MUTE_BTN, 20, 145, 70, 25
+
+    DEFPUSHBUTTON   "Close", IDCANCEL, 270, 185, 60, 25
+END
+
+// ============================================================
+//  About Dialog
+// ============================================================
+IDD_ABOUT DIALOGEX 0, 0, 300, 200
+STYLE DS_SETFONT | DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About Mate++"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    ICON            IDI_MAIN_ICON, -1, 12, 12, 32, 32
+
+    LTEXT           "Mate++", -1, 56, 14, 220, 18, SS_LEFT
+    LTEXT           "Live Wallpaper & Desktop Customization Engine", -1, 56, 33, 230, 18, SS_LEFT
+    LTEXT           "Version 1.0.0  |  Built with D2D + Media Foundation", -1, 56, 52, 230, 14, SS_LEFT
+
+    LTEXT           "", -1, 10, 76, 280, 1, SS_SUNKEN
+
+    LTEXT           "Supported Formats:", -1, 12, 86, 100, 12, SS_LEFT
+    LTEXT           "GIF, MP4, AVI, WMV, MKV, MOV, WEBM, M4V", -1, 12, 100, 276, 12, SS_LEFT
+
+    LTEXT           "Author:", -1, 12, 120, 50, 12, SS_LEFT
+    LTEXT           "PmgTeam  (PepperMCGamers / PmgDev64)", -1, 12, 134, 276, 12, SS_LEFT
+
+    LTEXT           "License:", -1, 12, 154, 50, 12, SS_LEFT
+    LTEXT           "Free to Use & Open-Source", -1, 12, 168, 276, 12, SS_LEFT
+
+    DEFPUSHBUTTON   "Close", IDCANCEL, 115, 172, 70, 22
+END
