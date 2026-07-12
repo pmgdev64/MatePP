@@ -41,6 +41,18 @@ The goal of this project is to provide a simple wallpaper engine that works well
 
 ---
 
+> ## ⚠️ Project Status
+>
+> **MatePP is currently on hold.**
+>
+> Development has been temporarily suspended due to critical hardware failures affecting the development environment, including a failing HDD with bad sectors and damaged motherboards.
+>
+> The project has **not been discontinued**. Development will resume once a stable development PC is available.
+>
+> **There is currently no estimated time of return (ETA).**
+
+---
+
 # Screenshots
 
 <img src="screenshot (1).png">
@@ -49,54 +61,80 @@ The goal of this project is to provide a simple wallpaper engine that works well
 
 ---
 
-## Features
+# About
 
-* Lightweight design
-* Direct2D rendering
-* Media Foundation video playback
-* Low memory usage
-* Built for Windows desktop
+MatePP is a lightweight animated wallpaper engine for Microsoft Windows.
 
----
+Unlike many wallpaper applications that focus on visual effects and extensive features, MatePP focuses on efficiency, stability, and low resource usage.
 
-## Current Status
-
-This project is currently under active development.
-
-Some features are incomplete and APIs may change between releases.
-
-As an independent personal project, development may be paused or discontinued in the future depending on available time and resources.
+The project aims to deliver smooth animated wallpapers while remaining usable on older and low-end computers.
 
 ---
 
-## Windows Compatibility
+# Features
 
-### Recommended
-
-* Windows 10
-* Windows 11 (21H2, 22H2, 23H2)
-
-### Not Recommended
-
-* Windows 11 24H2
-
-Windows 11 version 24H2 introduced changes to Explorer's desktop shell behavior. During testing, these changes may cause wallpaper rendering issues such as a blank desktop or loss of the rendering surface.
-
-Support for Windows 11 24H2 is currently under investigation.
+- Lightweight design
+- Direct2D rendering
+- Media Foundation video playback
+- Hardware accelerated decoding (where supported)
+- Low CPU usage
+- Low memory usage
+- Designed for low-end hardware
+- Open source
+- Simple desktop integration
 
 ---
 
-## Goals
+# Goals
 
-* Support common video formats
-* High performance on low-end hardware
-* Stable wallpaper rendering
-* Simple manager application
-* Open source
+- Support common video formats
+- High performance on older hardware
+- Stable wallpaper rendering
+- Small installation size
+- Easy-to-use wallpaper manager
+- Minimal resource consumption
+- Open source development
 
 ---
 
-## Project Structure
+# Current Development
+
+The latest public releases remain available.
+
+Because the primary development PC is currently unavailable, no new releases or bug fixes are planned until development can resume.
+
+Existing issues and pull requests may not receive immediate responses.
+
+The repository will remain online.
+
+---
+
+# Windows Compatibility
+
+## Recommended
+
+- Windows 10
+- Windows 11 21H2
+- Windows 11 22H2
+- Windows 11 23H2
+
+## Limited Support
+
+- Windows 11 24H2
+
+Windows 11 version 24H2 introduced changes to the Explorer desktop shell.
+
+These changes may affect wallpaper rendering and can cause problems such as:
+
+- Wallpaper not appearing
+- Blank desktop background
+- WorkerW rendering issues
+
+Support for Windows 11 24H2 remains experimental.
+
+---
+
+# Project Structure
 
 ```text
 MatePP/
@@ -108,16 +146,52 @@ MatePP-Manager/
 
 ---
 
-## Build
+# Build Environment
 
 Current development environment:
 
-* Code::Blocks
-* MinGW-w64
-* Windows SDK
+- Code::Blocks
+- MinGW-w64
+- GCC
+- Windows SDK
+- Direct2D
+- Windows Media Foundation
 
 ---
 
-## License
+# Future Plans
 
-GPL-3.0
+Development will continue after the development environment has been restored.
+
+Planned improvements include:
+
+- Improved playback performance
+- Better hardware video decoding
+- Additional wallpaper formats
+- More stable rendering pipeline
+- Improved Windows compatibility
+- DirectX rendering improvements
+
+The roadmap may change in future releases.
+
+---
+
+# Contributing
+
+Although development is currently paused, bug reports and pull requests are still welcome.
+
+Contributions may be reviewed once active development resumes.
+
+---
+
+# License
+
+Licensed under the GNU General Public License v3.0.
+
+See the LICENSE file for more information.
+
+---
+
+<p align="center">
+Made with ❤️ by PmgDev64
+</p>
