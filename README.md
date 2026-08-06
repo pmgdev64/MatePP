@@ -41,15 +41,14 @@ The goal of this project is to provide a simple wallpaper engine that works well
 
 ---
 
-> ## ⚠️ Project Status
+> ## 🚀 Project Status
 >
-> **MatePP is currently on hold.**
+> **Development has officially resumed!**
 >
-> Development has been temporarily suspended due to critical hardware failures affecting the development environment, including a failing HDD with bad sectors and damaged motherboards.
->
-> The project has **not been discontinued**. Development will resume once a stable development PC is available.
->
-> **There is currently no estimated time of return (ETA).**
+> The development environment is restored, and active work is underway. 
+> 
+> **⚠️ CRITICAL WARNING FOR WINDOWS 11 24H2:** 
+> Do **NOT** use MatePP on Windows 11 version 24H2. Microsoft completely changed the internal `WorkerW` desktop window structure. Running the engine on this version will cause rendering failures, blank backgrounds, or shell instability. 
 
 ---
 
