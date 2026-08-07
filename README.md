@@ -45,7 +45,7 @@ The goal of this project is to provide a simple wallpaper engine that works well
 >
 > **Development has officially resumed!**
 >
-> The development environment is restored, and active work is underway. 
+> The development environment is restored, and active work is underway. **Stay tuned for new updates!**
 > 
 > **⚠️ CRITICAL WARNING FOR WINDOWS 11 24H2:** 
 > Do **NOT** use MatePP on Windows 11 version 24H2. Microsoft completely changed the internal `WorkerW` desktop window structure. Running the engine on this version will cause rendering failures, blank backgrounds, or shell instability. 
@@ -74,7 +74,7 @@ The project aims to deliver smooth animated wallpapers while remaining usable on
 
 - Lightweight design
 - Direct2D rendering
-- Media Foundation video playback
+- FFmpeg video decoding & playback
 - Hardware accelerated decoding (where supported)
 - Low CPU usage
 - Low memory usage
@@ -86,7 +86,7 @@ The project aims to deliver smooth animated wallpapers while remaining usable on
 
 # Goals
 
-- Support common video formats
+- Support broad range of video formats via FFmpeg
 - High performance on older hardware
 - Stable wallpaper rendering
 - Small installation size
@@ -98,13 +98,9 @@ The project aims to deliver smooth animated wallpapers while remaining usable on
 
 # Current Development
 
-The latest public releases remain available.
+Development has officially resumed.
 
-Because the primary development PC is currently unavailable, no new releases or bug fixes are planned until development can resume.
-
-Existing issues and pull requests may not receive immediate responses.
-
-The repository will remain online.
+New features, performance optimizations, and bug fixes are actively being worked on. Stay tuned for upcoming releases and updates!
 
 ---
 
@@ -141,56 +137,3 @@ MatePP/
 
 MatePP-Manager/
     Wallpaper Manager
-```
-
----
-
-# Build Environment
-
-Current development environment:
-
-- Code::Blocks
-- MinGW-w64
-- GCC
-- Windows SDK
-- Direct2D
-- Windows Media Foundation
-
----
-
-# Future Plans
-
-Development will continue after the development environment has been restored.
-
-Planned improvements include:
-
-- Improved playback performance
-- Better hardware video decoding
-- Additional wallpaper formats
-- More stable rendering pipeline
-- Improved Windows compatibility
-- DirectX rendering improvements
-
-The roadmap may change in future releases.
-
----
-
-# Contributing
-
-Although development is currently paused, bug reports and pull requests are still welcome.
-
-Contributions may be reviewed once active development resumes.
-
----
-
-# License
-
-Licensed under the GNU General Public License v3.0.
-
-See the LICENSE file for more information.
-
----
-
-<p align="center">
-Made with ❤️ by PmgDev64
-</p>
