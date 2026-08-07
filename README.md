@@ -80,6 +80,7 @@ The project aims to deliver smooth animated wallpapers while remaining usable on
 - Low memory usage
 - Designed for low-end hardware
 - Open source
+- Easy setup via dedicated installer
 - Simple desktop integration
 
 ---
@@ -96,11 +97,13 @@ The project aims to deliver smooth animated wallpapers while remaining usable on
 
 ---
 
-# Current Development
+# Current Development & Releases
 
 Development has officially resumed.
 
-New features, performance optimizations, and bug fixes are actively being worked on. Stay tuned for upcoming releases and updates!
+New features, performance optimizations, and bug fixes are actively being worked on.
+
+Starting from upcoming releases, MatePP will provide a convenient **Installer** package alongside standard builds rather than standalone zip archives only. Stay tuned for upcoming releases and updates!
 
 ---
 
@@ -137,3 +140,53 @@ MatePP/
 
 MatePP-Manager/
     Wallpaper Manager
+```
+
+---
+
+# Build Environment
+
+Current development environment:
+
+- Code::Blocks
+- MinGW-w64
+- GCC
+- Windows SDK
+- Direct2D
+- FFmpeg
+
+---
+
+# Future Plans
+
+Planned improvements include:
+
+- Improved installer setup and seamless updates
+- Improved playback performance with FFmpeg
+- Better hardware video decoding
+- Additional wallpaper formats
+- More stable rendering pipeline
+- Improved Windows compatibility
+- DirectX rendering improvements
+
+The roadmap may change in future releases.
+
+---
+
+# Contributing
+
+Contributions, bug reports, and pull requests are welcome! Feel free to check the issues page or submit a pull request.
+
+---
+
+# License
+
+Licensed under the GNU General Public License v3.0.
+
+See the LICENSE file for more information.
+
+---
+
+<p align="center">
+Made with ❤️ by PmgDev64
+</p>
