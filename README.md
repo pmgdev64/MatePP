@@ -52,15 +52,25 @@ The goal of this project is to provide a simple wallpaper engine that works well
 
 ---
 
-# Screenshots
+# 📥 Installation
 
-<img src="screenshot (1).png">
-<img src="screenshot (6).png">
-<img src="screenshot (4).png">
+1. Go to the [Releases](https://github.com) page.
+2. Download the latest installer package (`MatePP_Setup.exe`) or the standard standalone archive.
+3. Run the installer and follow the on-screen instructions to integrate MatePP with your desktop.
 
 ---
 
-# About
+# 📸 Screenshots
+
+<p align="center">
+  <img src="screenshot (1).png" width="32%" alt="Screenshot 1" />
+  <img src="screenshot (6).png" width="32%" alt="Screenshot 2" />
+  <img src="screenshot (4).png" width="32%" alt="Screenshot 3" />
+</p>
+
+---
+
+# 📝 About
 
 MatePP is a lightweight animated wallpaper engine for Microsoft Windows.
 
@@ -70,7 +80,7 @@ The project aims to deliver smooth animated wallpapers while remaining usable on
 
 ---
 
-# Features
+# ✨ Features
 
 - Lightweight design
 - Direct2D rendering
@@ -85,7 +95,7 @@ The project aims to deliver smooth animated wallpapers while remaining usable on
 
 ---
 
-# Goals
+# 🎯 Goals
 
 - Support broad range of video formats via FFmpeg
 - High performance on older hardware
@@ -97,67 +107,49 @@ The project aims to deliver smooth animated wallpapers while remaining usable on
 
 ---
 
-# Current Development & Releases
+# 💻 Windows Compatibility
 
-Development has officially resumed.
-
-New features, performance optimizations, and bug fixes are actively being worked on.
-
-Starting from upcoming releases, MatePP will provide a convenient **Installer** package alongside standard builds rather than standalone zip archives only. Stay tuned for upcoming releases and updates!
-
----
-
-# Windows Compatibility
-
-## Recommended
-
+###  Recommended
 - Windows 10
 - Windows 11 21H2
 - Windows 11 22H2
 - Windows 11 23H2
 
-## Limited Support
-
+### ⚠️ Limited Support
 - Windows 11 24H2
 
-Windows 11 version 24H2 introduced changes to the Explorer desktop shell.
-
-These changes may affect wallpaper rendering and can cause problems such as:
-
+Windows 11 version 24H2 introduced changes to the Explorer desktop shell. These changes may affect wallpaper rendering and can cause problems such as:
 - Wallpaper not appearing
 - Blank desktop background
 - WorkerW rendering issues
 
-Support for Windows 11 24H2 remains experimental.
+*Support for Windows 11 24H2 remains highly experimental.*
 
 ---
 
-# Project Structure
+# 📂 Project Structure
 
 ```text
 MatePP/
-    Wallpaper Engine
+    └── Wallpaper Engine (Core Core)
 
 MatePP-Manager/
-    Wallpaper Manager
+    └── Wallpaper Manager (UI & Settings)
 ```
 
 ---
 
-# Build Environment
+# 🛠️ Build Environment
 
-Current development environment:
+Current development environment tools:
 
-- Code::Blocks
-- MinGW-w64
-- GCC
-- Windows SDK
-- Direct2D
-- FFmpeg
+- **IDE:** Code::Blocks
+- **Compiler:** MinGW-w64 / GCC
+- **API/Libraries:** Windows SDK, Direct2D, FFmpeg
 
 ---
 
-# Future Plans
+# 🗺️ Future Plans
 
 Planned improvements include:
 
@@ -169,24 +161,24 @@ Planned improvements include:
 - Improved Windows compatibility
 - DirectX rendering improvements
 
-The roadmap may change in future releases.
+*The roadmap may change in future releases.*
 
 ---
 
-# Contributing
+# 🤝 Contributing
 
-Contributions, bug reports, and pull requests are welcome! Feel free to check the issues page or submit a pull request.
+Contributions, bug reports, and pull requests are welcome! Feel free to check the [Issues](https://github.com) page or submit a pull request.
 
 ---
 
-# License
+# 📜 License
 
-Licensed under the GNU General Public License v3.0.
+Licensed under the **GNU General Public License v3.0**.
 
-See the LICENSE file for more information.
+See the `LICENSE` file for more information.
 
 ---
 
 <p align="center">
-Made with ❤️ by PmgDev64
+Made with ❤️ by <a href="https://github.com">PmgDev64</a>
 </p>
