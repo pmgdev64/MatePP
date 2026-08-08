@@ -1,6 +1,7 @@
-// audio_system.cpp — FFmpeg + WASAPI audio playback
-// Stop là fire-and-forget (detach), Start tạo thread mới ngay lập tức
-// Mỗi thread tự quản lý toàn bộ WASAPI + FFmpeg state (không share global)
+// audio_system.cpp — [DEPRECATED / REMOVED in v1.0.1 (Build at20260805)]
+// Legacy implementation: FFmpeg + WASAPI audio playback
+// Formerly used fire-and-forget (detach) threads on Stop/Start per-instance state.
+// Officially removed to streamline engine lifecycle and resource management.
 
 #define UNICODE
 #define _UNICODE
