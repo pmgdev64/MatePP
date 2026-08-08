@@ -8,6 +8,7 @@
 #include <string>
 #include "common.h"
 #include "pipe_server.h"
+#include "config.h"
 
 #define PIPE_NAME    L"\\\\.\\pipe\\MatePPHub"
 #define PIPE_BUFSIZE 4096
@@ -46,15 +47,21 @@ static void HandleCommand(const wchar_t* cmd) {
     else if (wcsncmp(cmd, L"PLAYLIST:", 9) == 0) {
         // Thêm vào playlist không load ngay
         const wchar_t* path = cmd + 9;
-        std::lock_guard<std::mutex> lk(g_playlistMtx);
-        g_playlist.push_back(path);
+        {
+            std::lock_guard<std::mutex> lk(g_playlistMtx);
+            g_playlist.push_back(path);
+        }
         LogToFile("[Pipe] PLAYLIST add: %ws", path);
+        Config_Save();
     }
     else if (wcscmp(cmd, L"CLEAR") == 0) {
-        std::lock_guard<std::mutex> lk(g_playlistMtx);
-        g_playlist.clear();
-        g_currentTrack = 0;
+        {
+            std::lock_guard<std::mutex> lk(g_playlistMtx);
+            g_playlist.clear();
+            g_currentTrack = 0;
+        }
         LogToFile("[Pipe] CLEAR playlist");
+        Config_Save();
     }
     else if (wcscmp(cmd, L"PAUSE") == 0) {
         g_isPaused = true;

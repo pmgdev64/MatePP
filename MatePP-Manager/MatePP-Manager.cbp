@@ -11,6 +11,17 @@
 				<Option object_output="obj/Debug/" />
 				<Option type="0" />
 				<Option compiler="gcc-msys2-mingw64" />
+				<Compiler>
+					<Add directory="D:/Codeblocks/ffmpeg_matepp/include" />
+				</Compiler>
+				<Linker>
+					<Add library="avcodec" />
+					<Add library="avformat" />
+					<Add library="avutil" />
+					<Add library="swresample" />
+					<Add library="swscale" />
+					<Add directory="D:/Codeblocks/ffmpeg_matepp/lib" />
+				</Linker>
 			</Target>
 			<Target title="Release">
 				<Option output="bin/Release/mppmgr" prefix_auto="1" extension_auto="1" />
@@ -27,6 +38,7 @@
 			<Add library="ole32" />
 			<Add library="windowscodecs" />
 			<Add library="shlwapi" />
+			<Add library="uxtheme" />
 		</Linker>
 		<Unit filename="app.ico" />
 		<Unit filename="mppmgr.exe.manifest" />

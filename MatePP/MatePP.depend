@@ -117,7 +117,7 @@
 	<string>
 	<mutex>
 
-1782747425 source:c:\users\pmgteam\documents\codeblocks\matepp\src\main.cpp
+1782788175 source:c:\users\pmgteam\documents\codeblocks\matepp\src\main.cpp
 	<windows.h>
 	<d2d1.h>
 	<dwrite.h>
@@ -144,6 +144,7 @@
 	"settings.h"
 	"about.h"
 	"pipe_server.h"
+	"audio_system.h"
 
 1782498382 c:\users\pmgteam\documents\codeblocks\matepp\include\settings.h
 	<windows.h>
@@ -158,7 +159,7 @@
 	"common.h"
 	"pipe_server.h"
 
-1782498394 source:c:\users\pmgteam\documents\codeblocks\matepp\src\settings.cpp
+1782758962 source:c:\users\pmgteam\documents\codeblocks\matepp\src\settings.cpp
 	<windows.h>
 	<commctrl.h>
 	<stdio.h>
@@ -166,28 +167,119 @@
 	<vector>
 	"common.h"
 	"settings.h"
+	"audio_system.h"
 
-1782715029 c:\users\pmgteam\documents\codeblocks\matepp\include\audio_system.h
+1782804302 c:\users\pmgteam\documents\codeblocks\matepp\include\audio_system.h
 	<windows.h>
-	<mfapi.h>
-	<mfidl.h>
-	<mfreadwrite.h>
 	<mmdeviceapi.h>
 	<audioclient.h>
 	<audiopolicy.h>
 	<mmsystem.h>
 
-1782715049 source:c:\users\pmgteam\documents\codeblocks\matepp\src\audio_system.cpp
+1782804312 source:c:\users\pmgteam\documents\codeblocks\matepp\src\audio_system.cpp
 	"audio_system.h"
-	<stdio.h>
 	<stdlib.h>
+	<string.h>
 	<math.h>
+	<algorithm>
+	<atomic>
+	<libavformat/avformat.h>
+	<libavcodec/avcodec.h>
+	<libavutil/opt.h>
+	<libavutil/samplefmt.h>
+	<libswresample/swresample.h>
 
-1782746625 source:c:\users\pmgteam\documents\codeblocks\matepp\src\video_decoder.cpp
+1782804737 source:c:\users\pmgteam\documents\codeblocks\matepp\src\video_decoder.cpp
+	<windows.h>
+	<d2d1.h>
+	<mutex>
+	<cstdarg>
+	<algorithm>
+	<libavformat/avformat.h>
+	<libavcodec/avcodec.h>
+	<libavutil/imgutils.h>
+	<libavutil/pixfmt.h>
+	<libswscale/swscale.h>
+
+1782499593 source:e:\codeblocks\matepp\resources.rc
+	<windows.h>
+	<commctrl.h>
+
+1782554034 source:e:\codeblocks\matepp\src\about.cpp
+	<windows.h>
+	<stdio.h>
+	"about.h"
+	"common.h"
+
+1782554025 e:\codeblocks\matepp\include\about.h
+	<windows.h>
+
+1782498551 e:\codeblocks\matepp\include\common.h
+	<windows.h>
+	<vector>
+	<string>
+	<mutex>
+
+1783737516 source:e:\codeblocks\matepp\src\audio_system.cpp
+	"audio_system.h"
+	<stdlib.h>
+	<string.h>
+	<math.h>
+	<algorithm>
+	<atomic>
+	<libavformat/avformat.h>
+	<libavcodec/avcodec.h>
+	<libavutil/opt.h>
+	<libavutil/samplefmt.h>
+	<libswresample/swresample.h>
+
+1783737524 e:\codeblocks\matepp\include\audio_system.h
+	<windows.h>
+	<mmdeviceapi.h>
+	<audioclient.h>
+	<audiopolicy.h>
+	<mmsystem.h>
+
+1782805278 source:e:\codeblocks\matepp\src\config.cpp
+	<windows.h>
+	<stdio.h>
+	<mutex>
+	"config.h"
+	"common.h"
+
+1782805271 e:\codeblocks\matepp\include\config.h
+	<windows.h>
+
+1782805387 source:e:\codeblocks\matepp\src\pipe_server.cpp
+	<windows.h>
+	<stdio.h>
+	<string>
+	"common.h"
+	"pipe_server.h"
+	"config.h"
+
+1782554741 e:\codeblocks\matepp\include\pipe_server.h
+	<windows.h>
+
+1782805376 source:e:\codeblocks\matepp\src\settings.cpp
+	<windows.h>
+	<commctrl.h>
+	<stdio.h>
+	<string>
+	<vector>
+	"common.h"
+	"settings.h"
+	"audio_system.h"
+	"config.h"
+
+1782498382 e:\codeblocks\matepp\include\settings.h
+	<windows.h>
+
+1783738944 source:e:\codeblocks\matepp\src\video_decoder.cpp
 	<windows.h>
 	<d2d1.h>
 	<d3d11.h>
-	<dxgi1_2.h>
+	<dxgi.h>
 	<mutex>
 	<cstdarg>
 	<algorithm>
@@ -198,4 +290,714 @@
 	<libavutil/hwcontext.h>
 	<libavutil/hwcontext_d3d11va.h>
 	<libswscale/swscale.h>
+
+1785478607 source:e:\codeblocks\matepp\src\main.cpp
+	<windows.h>
+	<d2d1.h>
+	<dwrite.h>
+	<dwmapi.h>
+	<wincodec.h>
+	<shlwapi.h>
+	<shlobj.h>
+	<math.h>
+	<stdio.h>
+	<stdlib.h>
+	<vector>
+	<mutex>
+	<shellapi.h>
+	<cstddef>
+	<commctrl.h>
+	<string>
+	<fstream>
+	<cstdarg>
+	<algorithm>
+	<psapi.h>
+	<signal.h>
+	<setjmp.h>
+	<mmsystem.h>
+	"common.h"
+	"settings.h"
+	"about.h"
+	"pipe_server.h"
+	"audio_system.h"
+	"config.h"
+	"eol_notice.h"
+	<winternl.h>
+
+1783707208 source:e:\codeblocks\matepp\src\eol_notice.cpp
+	"eol_notice.h"
+	"notice_client.h"
+	<string>
+	<vector>
+
+1783706455 e:\codeblocks\matepp\include\eol_notice.h
+	<windows.h>
+
+1783706449 e:\codeblocks\matepp\include\notice_client.h
+	<string>
+	<algorithm>
+
+1783706456 source:e:\codeblocks\matepp\src\notice_client.cpp
+	"notice_client.h"
+	<windows.h>
+	<winhttp.h>
+	<vector>
+	<sstream>
+
+1783695627 e:\codeblocks\ffmpeg_matepp\include\libavformat\avformat.h
+	<stdio.h>
+	"libavcodec/codec_par.h"
+	"libavcodec/defs.h"
+	"libavcodec/packet.h"
+	"libavutil/dict.h"
+	"libavutil/log.h"
+	"avio.h"
+	"libavformat/version_major.h"
+	"libavformat/version.h"
+	"libavutil/frame.h"
+	"libavcodec/codec.h"
+
+1783695628 e:\codeblocks\ffmpeg_matepp\include\libavcodec\codec_par.h
+	<stdint.h>
+	"libavutil/avutil.h"
+	"libavutil/channel_layout.h"
+	"libavutil/rational.h"
+	"libavutil/pixfmt.h"
+	"codec_id.h"
+	"defs.h"
+	"packet.h"
+
+1783695629 e:\codeblocks\ffmpeg_matepp\include\libavutil\avutil.h
+	"common.h"
+	"rational.h"
+	"version.h"
+	"macros.h"
+	"mathematics.h"
+	"log.h"
+	"pixfmt.h"
+
+1783695629 e:\codeblocks\ffmpeg_matepp\include\libavutil\common.h
+	<errno.h>
+	<inttypes.h>
+	<limits.h>
+	<math.h>
+	<stdint.h>
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	"attributes.h"
+	"error.h"
+	"macros.h"
+	"version.h"
+	"config.h"
+	"intmath.h"
+	"internal.h"
+	"mem.h"
+
+1783695629 e:\codeblocks\ffmpeg_matepp\include\libavutil\attributes.h
+	<stdio.h>
+
+1783695629 e:\codeblocks\ffmpeg_matepp\include\libavutil\error.h
+	<errno.h>
+	<stddef.h>
+	"macros.h"
+
+1783695630 e:\codeblocks\ffmpeg_matepp\include\libavutil\macros.h
+	"libavutil/avconfig.h"
+
+1783695631 e:\codeblocks\ffmpeg_matepp\include\libavutil\avconfig.h
+
+1783695630 e:\codeblocks\ffmpeg_matepp\include\libavutil\version.h
+	"macros.h"
+
+1783695630 e:\codeblocks\ffmpeg_matepp\include\libavutil\mem.h
+	<stddef.h>
+	<stdint.h>
+	"attributes.h"
+
+1783695630 e:\codeblocks\ffmpeg_matepp\include\libavutil\rational.h
+	<stdint.h>
+	<limits.h>
+	"attributes.h"
+
+1783695630 e:\codeblocks\ffmpeg_matepp\include\libavutil\mathematics.h
+	<stdint.h>
+	<math.h>
+	"attributes.h"
+	"rational.h"
+	"intfloat.h"
+
+1783695630 e:\codeblocks\ffmpeg_matepp\include\libavutil\intfloat.h
+	<stdint.h>
+	"attributes.h"
+
+1783695630 e:\codeblocks\ffmpeg_matepp\include\libavutil\log.h
+	<stdarg.h>
+	"attributes.h"
+	"version.h"
+
+1783695630 e:\codeblocks\ffmpeg_matepp\include\libavutil\pixfmt.h
+	"libavutil/avconfig.h"
+	"version.h"
+
+1783695629 e:\codeblocks\ffmpeg_matepp\include\libavutil\channel_layout.h
+	<stdint.h>
+	<stdlib.h>
+	"version.h"
+	"attributes.h"
+
+1783695628 e:\codeblocks\ffmpeg_matepp\include\libavcodec\codec_id.h
+	"libavutil/avutil.h"
+	"libavutil/samplefmt.h"
+	"version_major.h"
+
+1783695630 e:\codeblocks\ffmpeg_matepp\include\libavutil\samplefmt.h
+	<stdint.h>
+
+1783695628 e:\codeblocks\ffmpeg_matepp\include\libavcodec\version_major.h
+
+1783695628 e:\codeblocks\ffmpeg_matepp\include\libavcodec\defs.h
+	<stdint.h>
+	<stdlib.h>
+
+1783695628 e:\codeblocks\ffmpeg_matepp\include\libavcodec\packet.h
+	<stddef.h>
+	<stdint.h>
+	"libavutil/attributes.h"
+	"libavutil/buffer.h"
+	"libavutil/dict.h"
+	"libavutil/rational.h"
+	"libavutil/version.h"
+	"libavcodec/version_major.h"
+
+1783695629 e:\codeblocks\ffmpeg_matepp\include\libavutil\buffer.h
+	<stddef.h>
+	<stdint.h>
+
+1783695629 e:\codeblocks\ffmpeg_matepp\include\libavutil\dict.h
+	<stdint.h>
+
+1783695627 e:\codeblocks\ffmpeg_matepp\include\libavformat\avio.h
+	<stdint.h>
+	<stdio.h>
+	"libavutil/attributes.h"
+	"libavutil/dict.h"
+	"libavutil/log.h"
+	"libavformat/version_major.h"
+
+1783695627 e:\codeblocks\ffmpeg_matepp\include\libavformat\version_major.h
+
+1783695627 e:\codeblocks\ffmpeg_matepp\include\libavformat\version.h
+	"libavutil/version.h"
+	"version_major.h"
+
+1783695630 e:\codeblocks\ffmpeg_matepp\include\libavutil\frame.h
+	<stddef.h>
+	<stdint.h>
+	"avutil.h"
+	"buffer.h"
+	"channel_layout.h"
+	"dict.h"
+	"rational.h"
+	"samplefmt.h"
+	"pixfmt.h"
+	"version.h"
+
+1783695628 e:\codeblocks\ffmpeg_matepp\include\libavcodec\codec.h
+	<stdint.h>
+	"libavutil/avutil.h"
+	"libavutil/hwcontext.h"
+	"libavutil/log.h"
+	"libavutil/pixfmt.h"
+	"libavutil/rational.h"
+	"libavutil/samplefmt.h"
+	"libavcodec/codec_id.h"
+	"libavcodec/version_major.h"
+
+1783695630 e:\codeblocks\ffmpeg_matepp\include\libavutil\hwcontext.h
+	"buffer.h"
+	"frame.h"
+	"log.h"
+	"pixfmt.h"
+
+1783695628 e:\codeblocks\ffmpeg_matepp\include\libavcodec\avcodec.h
+	"libavutil/samplefmt.h"
+	"libavutil/attributes.h"
+	"libavutil/avutil.h"
+	"libavutil/buffer.h"
+	"libavutil/channel_layout.h"
+	"libavutil/dict.h"
+	"libavutil/frame.h"
+	"libavutil/log.h"
+	"libavutil/pixfmt.h"
+	"libavutil/rational.h"
+	"codec.h"
+	"codec_id.h"
+	"defs.h"
+	"packet.h"
+	"version_major.h"
+	"version.h"
+	"codec_desc.h"
+	"codec_par.h"
+
+1783695628 e:\codeblocks\ffmpeg_matepp\include\libavcodec\version.h
+	"libavutil/version.h"
+	"version_major.h"
+
+1783695628 e:\codeblocks\ffmpeg_matepp\include\libavcodec\codec_desc.h
+	"libavutil/avutil.h"
+	"codec_id.h"
+
+1783695630 e:\codeblocks\ffmpeg_matepp\include\libavutil\opt.h
+	"rational.h"
+	"avutil.h"
+	"channel_layout.h"
+	"dict.h"
+	"log.h"
+	"pixfmt.h"
+	"samplefmt.h"
+
+1783695628 e:\codeblocks\ffmpeg_matepp\include\libswresample\swresample.h
+	<stdint.h>
+	"libavutil/channel_layout.h"
+	"libavutil/frame.h"
+	"libavutil/samplefmt.h"
+	"libswresample/version_major.h"
+	"libswresample/version.h"
+
+1783695628 e:\codeblocks\ffmpeg_matepp\include\libswresample\version_major.h
+
+1783695628 e:\codeblocks\ffmpeg_matepp\include\libswresample\version.h
+	"libavutil/version.h"
+	"version_major.h"
+
+1783695630 e:\codeblocks\ffmpeg_matepp\include\libavutil\imgutils.h
+	<stddef.h>
+	<stdint.h>
+	"pixdesc.h"
+	"pixfmt.h"
+	"rational.h"
+
+1783695630 e:\codeblocks\ffmpeg_matepp\include\libavutil\pixdesc.h
+	<inttypes.h>
+	"attributes.h"
+	"pixfmt.h"
+
+1783695630 e:\codeblocks\ffmpeg_matepp\include\libavutil\hwcontext_d3d11va.h
+	<d3d11.h>
+	<stdint.h>
+
+1783695628 e:\codeblocks\ffmpeg_matepp\include\libswscale\swscale.h
+	<stdint.h>
+	"libavutil/avutil.h"
+	"libavutil/frame.h"
+	"libavutil/log.h"
+	"libavutil/pixfmt.h"
+	"version_major.h"
+	"version.h"
+
+1783695629 e:\codeblocks\ffmpeg_matepp\include\libswscale\version_major.h
+
+1783695629 e:\codeblocks\ffmpeg_matepp\include\libswscale\version.h
+	"libavutil/version.h"
+	"version_major.h"
+
+1786085192 source:d:\codeblocks\matepp\resources.rc
+	<windows.h>
+	<commctrl.h>
+
+1786011563 source:d:\codeblocks\matepp\src\about.cpp
+	<windows.h>
+	<stdio.h>
+	"about.h"
+	"common.h"
+
+1782554025 d:\codeblocks\matepp\include\about.h
+	<windows.h>
+
+1786001747 d:\codeblocks\matepp\include\common.h
+	<windows.h>
+	<vector>
+	<string>
+	<mutex>
+
+1785999792 source:d:\codeblocks\matepp\src\audio_system.cpp
+	"audio_system.h"
+	<stdlib.h>
+	<string.h>
+	<math.h>
+	<algorithm>
+	<atomic>
+	<libavformat/avformat.h>
+	<libavcodec/avcodec.h>
+	<libavutil/opt.h>
+	<libavutil/samplefmt.h>
+	<libswresample/swresample.h>
+
+1783737524 d:\codeblocks\matepp\include\audio_system.h
+	<windows.h>
+	<mmdeviceapi.h>
+	<audioclient.h>
+	<audiopolicy.h>
+	<mmsystem.h>
+
+1786193353 source:d:\codeblocks\matepp\src\config.cpp
+	<windows.h>
+	<stdio.h>
+	<mutex>
+	"config.h"
+	"common.h"
+
+1786193345 d:\codeblocks\matepp\include\config.h
+	<windows.h>
+
+1786002348 source:d:\codeblocks\matepp\src\eol_notice.cpp
+	"eol_notice.h"
+	"notice_client.h"
+	<string>
+	<vector>
+
+1783706455 d:\codeblocks\matepp\include\eol_notice.h
+	<windows.h>
+
+1783706449 d:\codeblocks\matepp\include\notice_client.h
+	<string>
+	<algorithm>
+
+1786108904 source:d:\codeblocks\matepp\src\main.cpp
+	<windows.h>
+	<d2d1.h>
+	<d2d1_1.h>
+	<dwrite.h>
+	<dwmapi.h>
+	<wincodec.h>
+	<shlwapi.h>
+	<math.h>
+	<stdio.h>
+	<stdlib.h>
+	<vector>
+	<mutex>
+	<atomic>
+	<shellapi.h>
+	<cstddef>
+	<commctrl.h>
+	<string>
+	<fstream>
+	<cstdarg>
+	<algorithm>
+	<psapi.h>
+	<signal.h>
+	<setjmp.h>
+	<mmsystem.h>
+	<condition_variable>
+	"common.h"
+	"settings.h"
+	"about.h"
+	"pipe_server.h"
+	"config.h"
+
+1782498382 d:\codeblocks\matepp\include\settings.h
+	<windows.h>
+
+1782554741 d:\codeblocks\matepp\include\pipe_server.h
+	<windows.h>
+
+1783706456 source:d:\codeblocks\matepp\src\notice_client.cpp
+	"notice_client.h"
+	<windows.h>
+	<winhttp.h>
+	<vector>
+	<sstream>
+
+1785917416 source:d:\codeblocks\matepp\src\pipe_server.cpp
+	<windows.h>
+	<stdio.h>
+	<string>
+	"common.h"
+	"pipe_server.h"
+	"config.h"
+
+1786002090 source:d:\codeblocks\matepp\src\settings.cpp
+	<windows.h>
+	<commctrl.h>
+	<stdio.h>
+	<string>
+	<vector>
+	"common.h"
+	"settings.h"
+	"config.h"
+
+1786109224 source:d:\codeblocks\matepp\src\video_decoder.cpp
+	<windows.h>
+	<d2d1.h>
+	<d3d11.h>
+	<dxgi.h>
+	<mutex>
+	<cstdarg>
+	<algorithm>
+	<libavformat/avformat.h>
+	<libavcodec/avcodec.h>
+	<libavutil/imgutils.h>
+	<libavutil/pixfmt.h>
+	<libavutil/hwcontext.h>
+	<libavutil/hwcontext_d3d11va.h>
+	<libswscale/swscale.h>
+
+1783695627 d:\codeblocks\ffmpeg_matepp\include\libavformat\avformat.h
+	<stdio.h>
+	"libavcodec/codec_par.h"
+	"libavcodec/defs.h"
+	"libavcodec/packet.h"
+	"libavutil/dict.h"
+	"libavutil/log.h"
+	"avio.h"
+	"libavformat/version_major.h"
+	"libavformat/version.h"
+	"libavutil/frame.h"
+	"libavcodec/codec.h"
+
+1783695628 d:\codeblocks\ffmpeg_matepp\include\libavcodec\codec_par.h
+	<stdint.h>
+	"libavutil/avutil.h"
+	"libavutil/channel_layout.h"
+	"libavutil/rational.h"
+	"libavutil/pixfmt.h"
+	"codec_id.h"
+	"defs.h"
+	"packet.h"
+
+1783695629 d:\codeblocks\ffmpeg_matepp\include\libavutil\avutil.h
+	"common.h"
+	"rational.h"
+	"version.h"
+	"macros.h"
+	"mathematics.h"
+	"log.h"
+	"pixfmt.h"
+
+1783695629 d:\codeblocks\ffmpeg_matepp\include\libavutil\common.h
+	<errno.h>
+	<inttypes.h>
+	<limits.h>
+	<math.h>
+	<stdint.h>
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	"attributes.h"
+	"error.h"
+	"macros.h"
+	"version.h"
+	"config.h"
+	"intmath.h"
+	"internal.h"
+	"mem.h"
+
+1783695629 d:\codeblocks\ffmpeg_matepp\include\libavutil\attributes.h
+	<stdio.h>
+
+1783695629 d:\codeblocks\ffmpeg_matepp\include\libavutil\error.h
+	<errno.h>
+	<stddef.h>
+	"macros.h"
+
+1783695630 d:\codeblocks\ffmpeg_matepp\include\libavutil\macros.h
+	"libavutil/avconfig.h"
+
+1783695631 d:\codeblocks\ffmpeg_matepp\include\libavutil\avconfig.h
+
+1783695630 d:\codeblocks\ffmpeg_matepp\include\libavutil\version.h
+	"macros.h"
+
+1783695630 d:\codeblocks\ffmpeg_matepp\include\libavutil\mem.h
+	<stddef.h>
+	<stdint.h>
+	"attributes.h"
+
+1783695630 d:\codeblocks\ffmpeg_matepp\include\libavutil\rational.h
+	<stdint.h>
+	<limits.h>
+	"attributes.h"
+
+1783695630 d:\codeblocks\ffmpeg_matepp\include\libavutil\mathematics.h
+	<stdint.h>
+	<math.h>
+	"attributes.h"
+	"rational.h"
+	"intfloat.h"
+
+1783695630 d:\codeblocks\ffmpeg_matepp\include\libavutil\intfloat.h
+	<stdint.h>
+	"attributes.h"
+
+1783695630 d:\codeblocks\ffmpeg_matepp\include\libavutil\log.h
+	<stdarg.h>
+	"attributes.h"
+	"version.h"
+
+1783695630 d:\codeblocks\ffmpeg_matepp\include\libavutil\pixfmt.h
+	"libavutil/avconfig.h"
+	"version.h"
+
+1783695629 d:\codeblocks\ffmpeg_matepp\include\libavutil\channel_layout.h
+	<stdint.h>
+	<stdlib.h>
+	"version.h"
+	"attributes.h"
+
+1783695628 d:\codeblocks\ffmpeg_matepp\include\libavcodec\codec_id.h
+	"libavutil/avutil.h"
+	"libavutil/samplefmt.h"
+	"version_major.h"
+
+1783695630 d:\codeblocks\ffmpeg_matepp\include\libavutil\samplefmt.h
+	<stdint.h>
+
+1783695628 d:\codeblocks\ffmpeg_matepp\include\libavcodec\version_major.h
+
+1783695628 d:\codeblocks\ffmpeg_matepp\include\libavcodec\defs.h
+	<stdint.h>
+	<stdlib.h>
+
+1783695628 d:\codeblocks\ffmpeg_matepp\include\libavcodec\packet.h
+	<stddef.h>
+	<stdint.h>
+	"libavutil/attributes.h"
+	"libavutil/buffer.h"
+	"libavutil/dict.h"
+	"libavutil/rational.h"
+	"libavutil/version.h"
+	"libavcodec/version_major.h"
+
+1783695629 d:\codeblocks\ffmpeg_matepp\include\libavutil\buffer.h
+	<stddef.h>
+	<stdint.h>
+
+1783695629 d:\codeblocks\ffmpeg_matepp\include\libavutil\dict.h
+	<stdint.h>
+
+1783695627 d:\codeblocks\ffmpeg_matepp\include\libavformat\avio.h
+	<stdint.h>
+	<stdio.h>
+	"libavutil/attributes.h"
+	"libavutil/dict.h"
+	"libavutil/log.h"
+	"libavformat/version_major.h"
+
+1783695627 d:\codeblocks\ffmpeg_matepp\include\libavformat\version_major.h
+
+1783695627 d:\codeblocks\ffmpeg_matepp\include\libavformat\version.h
+	"libavutil/version.h"
+	"version_major.h"
+
+1783695630 d:\codeblocks\ffmpeg_matepp\include\libavutil\frame.h
+	<stddef.h>
+	<stdint.h>
+	"avutil.h"
+	"buffer.h"
+	"channel_layout.h"
+	"dict.h"
+	"rational.h"
+	"samplefmt.h"
+	"pixfmt.h"
+	"version.h"
+
+1783695628 d:\codeblocks\ffmpeg_matepp\include\libavcodec\codec.h
+	<stdint.h>
+	"libavutil/avutil.h"
+	"libavutil/hwcontext.h"
+	"libavutil/log.h"
+	"libavutil/pixfmt.h"
+	"libavutil/rational.h"
+	"libavutil/samplefmt.h"
+	"libavcodec/codec_id.h"
+	"libavcodec/version_major.h"
+
+1783695630 d:\codeblocks\ffmpeg_matepp\include\libavutil\hwcontext.h
+	"buffer.h"
+	"frame.h"
+	"log.h"
+	"pixfmt.h"
+
+1783695628 d:\codeblocks\ffmpeg_matepp\include\libavcodec\avcodec.h
+	"libavutil/samplefmt.h"
+	"libavutil/attributes.h"
+	"libavutil/avutil.h"
+	"libavutil/buffer.h"
+	"libavutil/channel_layout.h"
+	"libavutil/dict.h"
+	"libavutil/frame.h"
+	"libavutil/log.h"
+	"libavutil/pixfmt.h"
+	"libavutil/rational.h"
+	"codec.h"
+	"codec_id.h"
+	"defs.h"
+	"packet.h"
+	"version_major.h"
+	"version.h"
+	"codec_desc.h"
+	"codec_par.h"
+
+1783695628 d:\codeblocks\ffmpeg_matepp\include\libavcodec\version.h
+	"libavutil/version.h"
+	"version_major.h"
+
+1783695628 d:\codeblocks\ffmpeg_matepp\include\libavcodec\codec_desc.h
+	"libavutil/avutil.h"
+	"codec_id.h"
+
+1783695630 d:\codeblocks\ffmpeg_matepp\include\libavutil\opt.h
+	"rational.h"
+	"avutil.h"
+	"channel_layout.h"
+	"dict.h"
+	"log.h"
+	"pixfmt.h"
+	"samplefmt.h"
+
+1783695628 d:\codeblocks\ffmpeg_matepp\include\libswresample\swresample.h
+	<stdint.h>
+	"libavutil/channel_layout.h"
+	"libavutil/frame.h"
+	"libavutil/samplefmt.h"
+	"libswresample/version_major.h"
+	"libswresample/version.h"
+
+1783695628 d:\codeblocks\ffmpeg_matepp\include\libswresample\version_major.h
+
+1783695628 d:\codeblocks\ffmpeg_matepp\include\libswresample\version.h
+	"libavutil/version.h"
+	"version_major.h"
+
+1783695630 d:\codeblocks\ffmpeg_matepp\include\libavutil\imgutils.h
+	<stddef.h>
+	<stdint.h>
+	"pixdesc.h"
+	"pixfmt.h"
+	"rational.h"
+
+1783695630 d:\codeblocks\ffmpeg_matepp\include\libavutil\pixdesc.h
+	<inttypes.h>
+	"attributes.h"
+	"pixfmt.h"
+
+1783695630 d:\codeblocks\ffmpeg_matepp\include\libavutil\hwcontext_d3d11va.h
+	<d3d11.h>
+	<stdint.h>
+
+1783695628 d:\codeblocks\ffmpeg_matepp\include\libswscale\swscale.h
+	<stdint.h>
+	"libavutil/avutil.h"
+	"libavutil/frame.h"
+	"libavutil/log.h"
+	"libavutil/pixfmt.h"
+	"version_major.h"
+	"version.h"
+
+1783695629 d:\codeblocks\ffmpeg_matepp\include\libswscale\version_major.h
+
+1783695629 d:\codeblocks\ffmpeg_matepp\include\libswscale\version.h
+	"libavutil/version.h"
+	"version_major.h"
 

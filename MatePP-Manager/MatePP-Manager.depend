@@ -20,3 +20,281 @@
 	<mutex>
 	<atomic>
 
+1782556160 source:e:\codeblocks\matepp-manager\resources.rc
+	<windows.h>
+
+1782806375 source:e:\codeblocks\matepp-manager\src\main.cpp
+	<windows.h>
+	<windowsx.h>
+	<commctrl.h>
+	<shellapi.h>
+	<shlobj.h>
+	<shlwapi.h>
+	<commdlg.h>
+	<winerror.h>
+	<wincodec.h>
+	<algorithm>
+	<stdio.h>
+	<string>
+	<vector>
+	<thread>
+	<mutex>
+	<atomic>
+
+1782556160 source:d:\codeblocks\matepp-manager\resources.rc
+	<windows.h>
+
+1786009215 source:d:\codeblocks\matepp-manager\src\main.cpp
+	<windows.h>
+	<windowsx.h>
+	<commctrl.h>
+	<shellapi.h>
+	<shlobj.h>
+	<shlwapi.h>
+	<commdlg.h>
+	<winerror.h>
+	<wincodec.h>
+	<uxtheme.h>
+	<algorithm>
+	<stdio.h>
+	<string>
+	<vector>
+	<thread>
+	<mutex>
+	<atomic>
+	<libavformat/avformat.h>
+	<libavcodec/avcodec.h>
+	<libavutil/imgutils.h>
+	<libswscale/swscale.h>
+
+1783695627 d:\codeblocks\ffmpeg_matepp\include\libavformat\avformat.h
+	<stdio.h>
+	"libavcodec/codec_par.h"
+	"libavcodec/defs.h"
+	"libavcodec/packet.h"
+	"libavutil/dict.h"
+	"libavutil/log.h"
+	"avio.h"
+	"libavformat/version_major.h"
+	"libavformat/version.h"
+	"libavutil/frame.h"
+	"libavcodec/codec.h"
+
+1783695628 d:\codeblocks\ffmpeg_matepp\include\libavcodec\codec_par.h
+	<stdint.h>
+	"libavutil/avutil.h"
+	"libavutil/channel_layout.h"
+	"libavutil/rational.h"
+	"libavutil/pixfmt.h"
+	"codec_id.h"
+	"defs.h"
+	"packet.h"
+
+1783695629 d:\codeblocks\ffmpeg_matepp\include\libavutil\avutil.h
+	"common.h"
+	"rational.h"
+	"version.h"
+	"macros.h"
+	"mathematics.h"
+	"log.h"
+	"pixfmt.h"
+
+1783695629 d:\codeblocks\ffmpeg_matepp\include\libavutil\common.h
+	<errno.h>
+	<inttypes.h>
+	<limits.h>
+	<math.h>
+	<stdint.h>
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	"attributes.h"
+	"error.h"
+	"macros.h"
+	"version.h"
+	"config.h"
+	"intmath.h"
+	"internal.h"
+	"mem.h"
+
+1783695629 d:\codeblocks\ffmpeg_matepp\include\libavutil\attributes.h
+	<stdio.h>
+
+1783695629 d:\codeblocks\ffmpeg_matepp\include\libavutil\error.h
+	<errno.h>
+	<stddef.h>
+	"macros.h"
+
+1783695630 d:\codeblocks\ffmpeg_matepp\include\libavutil\macros.h
+	"libavutil/avconfig.h"
+
+1783695631 d:\codeblocks\ffmpeg_matepp\include\libavutil\avconfig.h
+
+1783695630 d:\codeblocks\ffmpeg_matepp\include\libavutil\version.h
+	"macros.h"
+
+1783695630 d:\codeblocks\ffmpeg_matepp\include\libavutil\mem.h
+	<stddef.h>
+	<stdint.h>
+	"attributes.h"
+
+1783695630 d:\codeblocks\ffmpeg_matepp\include\libavutil\rational.h
+	<stdint.h>
+	<limits.h>
+	"attributes.h"
+
+1783695630 d:\codeblocks\ffmpeg_matepp\include\libavutil\mathematics.h
+	<stdint.h>
+	<math.h>
+	"attributes.h"
+	"rational.h"
+	"intfloat.h"
+
+1783695630 d:\codeblocks\ffmpeg_matepp\include\libavutil\intfloat.h
+	<stdint.h>
+	"attributes.h"
+
+1783695630 d:\codeblocks\ffmpeg_matepp\include\libavutil\log.h
+	<stdarg.h>
+	"attributes.h"
+	"version.h"
+
+1783695630 d:\codeblocks\ffmpeg_matepp\include\libavutil\pixfmt.h
+	"libavutil/avconfig.h"
+	"version.h"
+
+1783695629 d:\codeblocks\ffmpeg_matepp\include\libavutil\channel_layout.h
+	<stdint.h>
+	<stdlib.h>
+	"version.h"
+	"attributes.h"
+
+1783695628 d:\codeblocks\ffmpeg_matepp\include\libavcodec\codec_id.h
+	"libavutil/avutil.h"
+	"libavutil/samplefmt.h"
+	"version_major.h"
+
+1783695630 d:\codeblocks\ffmpeg_matepp\include\libavutil\samplefmt.h
+	<stdint.h>
+
+1783695628 d:\codeblocks\ffmpeg_matepp\include\libavcodec\version_major.h
+
+1783695628 d:\codeblocks\ffmpeg_matepp\include\libavcodec\defs.h
+	<stdint.h>
+	<stdlib.h>
+
+1783695628 d:\codeblocks\ffmpeg_matepp\include\libavcodec\packet.h
+	<stddef.h>
+	<stdint.h>
+	"libavutil/attributes.h"
+	"libavutil/buffer.h"
+	"libavutil/dict.h"
+	"libavutil/rational.h"
+	"libavutil/version.h"
+	"libavcodec/version_major.h"
+
+1783695629 d:\codeblocks\ffmpeg_matepp\include\libavutil\buffer.h
+	<stddef.h>
+	<stdint.h>
+
+1783695629 d:\codeblocks\ffmpeg_matepp\include\libavutil\dict.h
+	<stdint.h>
+
+1783695627 d:\codeblocks\ffmpeg_matepp\include\libavformat\avio.h
+	<stdint.h>
+	<stdio.h>
+	"libavutil/attributes.h"
+	"libavutil/dict.h"
+	"libavutil/log.h"
+	"libavformat/version_major.h"
+
+1783695627 d:\codeblocks\ffmpeg_matepp\include\libavformat\version_major.h
+
+1783695627 d:\codeblocks\ffmpeg_matepp\include\libavformat\version.h
+	"libavutil/version.h"
+	"version_major.h"
+
+1783695630 d:\codeblocks\ffmpeg_matepp\include\libavutil\frame.h
+	<stddef.h>
+	<stdint.h>
+	"avutil.h"
+	"buffer.h"
+	"channel_layout.h"
+	"dict.h"
+	"rational.h"
+	"samplefmt.h"
+	"pixfmt.h"
+	"version.h"
+
+1783695628 d:\codeblocks\ffmpeg_matepp\include\libavcodec\codec.h
+	<stdint.h>
+	"libavutil/avutil.h"
+	"libavutil/hwcontext.h"
+	"libavutil/log.h"
+	"libavutil/pixfmt.h"
+	"libavutil/rational.h"
+	"libavutil/samplefmt.h"
+	"libavcodec/codec_id.h"
+	"libavcodec/version_major.h"
+
+1783695630 d:\codeblocks\ffmpeg_matepp\include\libavutil\hwcontext.h
+	"buffer.h"
+	"frame.h"
+	"log.h"
+	"pixfmt.h"
+
+1783695628 d:\codeblocks\ffmpeg_matepp\include\libavcodec\avcodec.h
+	"libavutil/samplefmt.h"
+	"libavutil/attributes.h"
+	"libavutil/avutil.h"
+	"libavutil/buffer.h"
+	"libavutil/channel_layout.h"
+	"libavutil/dict.h"
+	"libavutil/frame.h"
+	"libavutil/log.h"
+	"libavutil/pixfmt.h"
+	"libavutil/rational.h"
+	"codec.h"
+	"codec_id.h"
+	"defs.h"
+	"packet.h"
+	"version_major.h"
+	"version.h"
+	"codec_desc.h"
+	"codec_par.h"
+
+1783695628 d:\codeblocks\ffmpeg_matepp\include\libavcodec\version.h
+	"libavutil/version.h"
+	"version_major.h"
+
+1783695628 d:\codeblocks\ffmpeg_matepp\include\libavcodec\codec_desc.h
+	"libavutil/avutil.h"
+	"codec_id.h"
+
+1783695630 d:\codeblocks\ffmpeg_matepp\include\libavutil\imgutils.h
+	<stddef.h>
+	<stdint.h>
+	"pixdesc.h"
+	"pixfmt.h"
+	"rational.h"
+
+1783695630 d:\codeblocks\ffmpeg_matepp\include\libavutil\pixdesc.h
+	<inttypes.h>
+	"attributes.h"
+	"pixfmt.h"
+
+1783695628 d:\codeblocks\ffmpeg_matepp\include\libswscale\swscale.h
+	<stdint.h>
+	"libavutil/avutil.h"
+	"libavutil/frame.h"
+	"libavutil/log.h"
+	"libavutil/pixfmt.h"
+	"version_major.h"
+	"version.h"
+
+1783695629 d:\codeblocks\ffmpeg_matepp\include\libswscale\version_major.h
+
+1783695629 d:\codeblocks\ffmpeg_matepp\include\libswscale\version.h
+	"libavutil/version.h"
+	"version_major.h"
+

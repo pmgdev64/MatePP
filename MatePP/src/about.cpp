@@ -61,7 +61,7 @@ void AboutDialog::Show(HWND parent) {
         wchar_t msg[512];
         swprintf_s(msg,
             L"Mate++ - Live Wallpaper Engine\n"
-            L"Version 1.0.0\n\n"
+            L"Version 1.0.1\n\n"
             L"Author: PmgTeam (PepperMCGamers / PmgDev64)\n"
             L"Built with: Direct2D + Media Foundation + MinGW64\n"
             L"Supports: GIF, MP4, AVI, WMV, MKV, MOV, WEBM\n\n"

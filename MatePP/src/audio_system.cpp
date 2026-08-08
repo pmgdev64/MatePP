@@ -1,436 +1,365 @@
-// audio_system.cpp — WASAPI + Media Foundation audio playback
-// Architecture:
-//   AudioThread: đọc MF audio samples → convert → push vào WASAPI render buffer
-//   Volume/Mute: ISimpleAudioVolume (per-session, không ảnh hưởng system volume)
-//   Sync với video: dùng cùng wall clock anchor, không cần lock chéo với decode thread
+// audio_system.cpp — FFmpeg + WASAPI audio playback
+// Stop là fire-and-forget (detach), Start tạo thread mới ngay lập tức
+// Mỗi thread tự quản lý toàn bộ WASAPI + FFmpeg state (không share global)
 
 #define UNICODE
 #define _UNICODE
 #define WIN32_LEAN_AND_MEAN
 
 #include "audio_system.h"
-#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <math.h>
+#include <algorithm>
+#include <atomic>
 
-using namespace std;
-
-// ============================================================
-//  COM helpers
-// ============================================================
-template<typename T> static inline void SafeRel(T*& p) {
-    if (p) { p->Release(); p = NULL; }
+extern "C" {
+#include <libavformat/avformat.h>
+#include <libavcodec/avcodec.h>
+#include <libavutil/opt.h>
+#include <libavutil/samplefmt.h>
+#include <libswresample/swresample.h>
 }
 
-// ============================================================
-//  Internal state
-// ============================================================
-static HANDLE               g_hAudioThread   = NULL;
-static volatile bool        g_audioRunning   = false;
-static volatile bool        g_audioPaused    = false;
-static volatile bool        g_audioMuted     = false;
-static volatile float       g_audioVolume    = 1.0f;
-static volatile LONGLONG    g_audioSeekPos   = -1LL; // -1 = no pending seek
-
-static IMMDeviceEnumerator* g_pEnum          = NULL;
-static IMMDevice*           g_pDevice        = NULL;
-static IAudioClient*        g_pAudioClient   = NULL;
-static IAudioRenderClient*  g_pRenderClient  = NULL;
-static ISimpleAudioVolume*  g_pSimpleVol     = NULL;
-static IMFSourceReader*     g_pAudioReader   = NULL;
-
-static WAVEFORMATEX*        g_pWfx           = NULL; // negotiated format
-static UINT32               g_bufferFrames   = 0;    // WASAPI buffer size in frames
-static HANDLE               g_hAudioEvent    = NULL; // WASAPI event-driven mode
-static wchar_t              g_audioPath[MAX_PATH] = {0};
-
-// Logging — forward decl (defined in main.cpp)
 extern void LogToFile(const char* msg, ...);
 
-// ============================================================
-//  Internal helpers
-// ============================================================
-static void Audio_Cleanup_Internal() {
-    if (g_pAudioClient) g_pAudioClient->Stop();
-
-    SafeRel(g_pSimpleVol);
-    SafeRel(g_pRenderClient);
-    SafeRel(g_pAudioClient);
-    SafeRel(g_pDevice);
-    SafeRel(g_pEnum);
-    SafeRel(g_pAudioReader);
-
-    if (g_pWfx) { CoTaskMemFree(g_pWfx); g_pWfx = NULL; }
-    if (g_hAudioEvent) { CloseHandle(g_hAudioEvent); g_hAudioEvent = NULL; }
-
-    g_bufferFrames = 0;
-}
-
-// Mở MF audio stream từ file
-static bool Audio_OpenReader(const wchar_t* path) {
-    HRESULT hr = MFCreateSourceReaderFromURL(path, NULL, &g_pAudioReader);
-    if (FAILED(hr)) {
-        LogToFile("[Audio] MFCreateSourceReaderFromURL failed: 0x%08X", (unsigned)hr);
-        return false;
-    }
-
-    // Disable tất cả stream, chỉ enable audio stream đầu tiên
-    g_pAudioReader->SetStreamSelection(MF_SOURCE_READER_ALL_STREAMS, FALSE);
-    g_pAudioReader->SetStreamSelection(MF_SOURCE_READER_FIRST_AUDIO_STREAM, TRUE);
-
-    // Set output format: PCM float 32-bit — WASAPI native, không cần resample
-    IMFMediaType* pType = NULL;
-    MFCreateMediaType(&pType);
-    pType->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Audio);
-    pType->SetGUID(MF_MT_SUBTYPE, MFAudioFormat_Float);
-    hr = g_pAudioReader->SetCurrentMediaType(MF_SOURCE_READER_FIRST_AUDIO_STREAM, NULL, pType);
-    SafeRel(pType);
-
-    if (FAILED(hr)) {
-        // Fallback: PCM 16-bit
-        MFCreateMediaType(&pType);
-        pType->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Audio);
-        pType->SetGUID(MF_MT_SUBTYPE, MFAudioFormat_PCM);
-        hr = g_pAudioReader->SetCurrentMediaType(MF_SOURCE_READER_FIRST_AUDIO_STREAM, NULL, pType);
-        SafeRel(pType);
-        if (FAILED(hr)) {
-            LogToFile("[Audio] Cannot set audio output format: 0x%08X", (unsigned)hr);
-            SafeRel(g_pAudioReader);
-            return false;
-        }
-        LogToFile("[Audio] Format: PCM 16-bit (fallback)");
-    } else {
-        LogToFile("[Audio] Format: Float 32-bit");
-    }
-
-    // Lấy negotiated format để config WASAPI
-    IMFMediaType* pCurrent = NULL;
-    hr = g_pAudioReader->GetCurrentMediaType(MF_SOURCE_READER_FIRST_AUDIO_STREAM, &pCurrent);
-    if (FAILED(hr)) {
-        LogToFile("[Audio] GetCurrentMediaType failed: 0x%08X", (unsigned)hr);
-        SafeRel(g_pAudioReader);
-        return false;
-    }
-
-    // Convert IMFMediaType → WAVEFORMATEX
-    UINT32 wfxSize = 0;
-    hr = MFCreateWaveFormatExFromMFMediaType(pCurrent, &g_pWfx, &wfxSize);
-    SafeRel(pCurrent);
-    if (FAILED(hr)) {
-        LogToFile("[Audio] MFCreateWaveFormatExFromMFMediaType failed: 0x%08X", (unsigned)hr);
-        SafeRel(g_pAudioReader);
-        return false;
-    }
-
-    LogToFile("[Audio] Stream: %dHz %dch %dbit",
-              g_pWfx->nSamplesPerSec, g_pWfx->nChannels, g_pWfx->wBitsPerSample);
-    return true;
-}
-
-// Init WASAPI render client với format từ MF
-static bool Audio_InitWASAPI() {
-    HRESULT hr;
-
-    hr = CoCreateInstance(__uuidof(MMDeviceEnumerator), NULL, CLSCTX_ALL,
-                          __uuidof(IMMDeviceEnumerator), (void**)&g_pEnum);
-    if (FAILED(hr)) {
-        LogToFile("[Audio] CoCreateInstance MMDeviceEnumerator: 0x%08X", (unsigned)hr);
-        return false;
-    }
-
-    hr = g_pEnum->GetDefaultAudioEndpoint(eRender, eConsole, &g_pDevice);
-    if (FAILED(hr)) {
-        LogToFile("[Audio] GetDefaultAudioEndpoint: 0x%08X", (unsigned)hr);
-        return false;
-    }
-
-    hr = g_pDevice->Activate(__uuidof(IAudioClient), CLSCTX_ALL, NULL, (void**)&g_pAudioClient);
-    if (FAILED(hr)) {
-        LogToFile("[Audio] Activate IAudioClient: 0x%08X", (unsigned)hr);
-        return false;
-    }
-
-    // Event-driven mode — AudioClient signal khi cần data
-    g_hAudioEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
-    if (!g_hAudioEvent) {
-        LogToFile("[Audio] CreateEvent failed");
-        return false;
-    }
-
-    // Buffer duration: 200ms — đủ lớn tránh glitch, không quá lớn gây latency
-    REFERENCE_TIME bufDur = 2000000LL; // 200ms in 100ns units
-
-    hr = g_pAudioClient->Initialize(
-        AUDCLNT_SHAREMODE_SHARED,
-        AUDCLNT_STREAMFLAGS_EVENTCALLBACK,
-        bufDur, 0,
-        g_pWfx, NULL);
-
-    if (FAILED(hr)) {
-        LogToFile("[Audio] IAudioClient::Initialize: 0x%08X", (unsigned)hr);
-        // Thử lại với format của device
-        WAVEFORMATEX* pDevFmt = NULL;
-        g_pAudioClient->GetMixFormat(&pDevFmt);
-        if (pDevFmt) {
-            hr = g_pAudioClient->Initialize(
-                AUDCLNT_SHAREMODE_SHARED,
-                AUDCLNT_STREAMFLAGS_EVENTCALLBACK,
-                bufDur, 0,
-                pDevFmt, NULL);
-            CoTaskMemFree(pDevFmt);
-        }
-        if (FAILED(hr)) {
-            LogToFile("[Audio] IAudioClient::Initialize retry failed: 0x%08X", (unsigned)hr);
-            return false;
-        }
-    }
-
-    hr = g_pAudioClient->SetEventHandle(g_hAudioEvent);
-    if (FAILED(hr)) {
-        LogToFile("[Audio] SetEventHandle: 0x%08X", (unsigned)hr);
-        return false;
-    }
-
-    hr = g_pAudioClient->GetBufferSize(&g_bufferFrames);
-    if (FAILED(hr)) {
-        LogToFile("[Audio] GetBufferSize: 0x%08X", (unsigned)hr);
-        return false;
-    }
-
-    hr = g_pAudioClient->GetService(__uuidof(IAudioRenderClient), (void**)&g_pRenderClient);
-    if (FAILED(hr)) {
-        LogToFile("[Audio] GetService IAudioRenderClient: 0x%08X", (unsigned)hr);
-        return false;
-    }
-
-    // Volume control per-session
-    hr = g_pAudioClient->GetService(__uuidof(ISimpleAudioVolume), (void**)&g_pSimpleVol);
-    if (SUCCEEDED(hr)) {
-        g_pSimpleVol->SetMasterVolume(g_audioVolume, NULL);
-        g_pSimpleVol->SetMute(g_audioMuted ? TRUE : FALSE, NULL);
-    }
-
-    LogToFile("[Audio] WASAPI init OK, buffer=%u frames", g_bufferFrames);
-    return true;
-}
+template<typename T>
+static inline void SafeRel(T*& p) { if (p) { p->Release(); p = nullptr; } }
 
 // ============================================================
-//  Audio Thread
+//  Shared control (main → thread, atomic)
 // ============================================================
+static volatile bool  g_audioRunning  = false;
+static volatile bool  g_audioPaused   = false;
+static volatile bool  g_audioMuted    = false;
+static volatile float g_audioVolume   = 1.0f;
+static volatile LONG  g_loopPending   = 0;
+static volatile LONG  g_generation    = 0;   // tăng mỗi lần Start() — thread cũ tự thoát
+
+// Master clock — vị trí phát hiện tại tính bằng giây, video sync theo cái này.
+// Update mỗi lần audio thread ReleaseBuffer thành công (tức là frame đã thực
+// sự được đẩy vào hàng đợi phát của thiết bị, gần với "đang nghe" nhất).
+static std::atomic<double> g_audioClockSec{0.0};
+
+// True khi g_audioClockSec đã được cập nhật bằng dữ liệu THẬT (đã ReleaseBuffer
+// thành công ít nhất 1 lần), phân biệt với "audio thread đã được tạo nhưng còn
+// đang init". Reset false mỗi khi Start() hoặc loop-seek, set true lần đầu
+// tiên push PCM thật thành công.
+static std::atomic<bool> g_audioClockValid{false};
+
+// Thread handle chỉ dùng để IsRunning query, không wait
+static HANDLE g_hAudioThread = nullptr;
+
+// Kick event — mỗi thread tạo riêng, pointer share qua StartParams
+// Dùng global handle để AudioSystem_NotifyVideoLoop / SetPaused kick được
+static HANDLE g_hKickEvent = nullptr;
+
+// Path copy
+static wchar_t g_audioPath[MAX_PATH * 4] = {};
+
 // ============================================================
-//  Audio Thread — event-driven, pull-model
-//  WASAPI fires g_hAudioEvent khi buffer cần data
-//  → tính avail frames → đọc đúng số MF samples cần → push
+//  Per-thread params (heap, freed bởi thread trước khi thoát)
 // ============================================================
-static DWORD WINAPI AudioThread(LPVOID) {
+struct AudioStartParams {
+    wchar_t  path[MAX_PATH * 4];
+    float    volume;
+    LONG     gen;       // generation lúc thread được tạo
+    HANDLE   kickEvent; // auto-reset event — thread tự CloseHandle khi thoát
+};
+
+// ============================================================
+//  Ring buffer
+// ============================================================
+struct RingBuf {
+    BYTE*  data     = nullptr;
+    UINT32 capacity = 0;
+    UINT32 head     = 0;
+    UINT32 tail     = 0;
+    UINT32 used     = 0;
+
+    bool alloc(UINT32 bytes) { data = (BYTE*)malloc(bytes); if (!data) return false; capacity = bytes; return true; }
+    void free_() { free(data); data = nullptr; capacity = used = head = tail = 0; }
+    void flush() { head = tail = used = 0; }
+
+    bool write(const BYTE* src, UINT32 bytes) {
+        if (bytes > capacity - used) return false;
+        UINT32 p1 = std::min(bytes, capacity - head);
+        memcpy(data + head, src, p1);
+        if (bytes > p1) memcpy(data, src + p1, bytes - p1);
+        head = (head + bytes) % capacity;
+        used += bytes;
+        return true;
+    }
+    bool read(BYTE* dst, UINT32 bytes) {
+        if (bytes > used) return false;
+        UINT32 p1 = std::min(bytes, capacity - tail);
+        memcpy(dst, data + tail, p1);
+        if (bytes > p1) memcpy(dst + p1, data + tail + p1 - capacity, bytes - p1);
+        tail = (tail + bytes) % capacity;
+        used -= bytes;
+        return true;
+    }
+    void discard(UINT32 bytes) { bytes = std::min(bytes, used); tail = (tail + bytes) % capacity; used -= bytes; }
+};
+
+// ============================================================
+//  Audio Thread — toàn bộ WASAPI + FFmpeg state là local
+// ============================================================
+static DWORD WINAPI AudioThread(LPVOID pArg) {
+    AudioStartParams* p = (AudioStartParams*)pArg;
+    LONG myGen    = p->gen;
+    HANDLE myKick = p->kickEvent;
+    char path_utf8[MAX_PATH * 4] = {};
+    WideCharToMultiByte(CP_UTF8, 0, p->path, -1, path_utf8, sizeof(path_utf8) - 1, nullptr, nullptr);
+    delete p;
+
     timeBeginPeriod(1);
-    LogToFile("[Audio] Thread started");
+    LogToFile("[Audio] Thread gen=%d started", (int)myGen);
 
-    // Pre-fill silence 1 buffer để tránh glitch ở đầu
-    {
-        UINT32 pad = 0;
-        g_pAudioClient->GetCurrentPadding(&pad);
-        UINT32 avail = g_bufferFrames - pad;
-        if (avail > 0) {
-            BYTE* pData = NULL;
-            if (SUCCEEDED(g_pRenderClient->GetBuffer(avail, &pData)) && pData) {
-                ZeroMemory(pData, avail * g_pWfx->nBlockAlign);
-                g_pRenderClient->ReleaseBuffer(avail, 0);
-            }
-        }
-    }
+    // ---- local WASAPI state ----
+    IMMDeviceEnumerator* pEnum        = nullptr;
+    IMMDevice*           pDevice      = nullptr;
+    IAudioClient*        pAudioClient = nullptr;
+    IAudioRenderClient*  pRender      = nullptr;
+    ISimpleAudioVolume*  pSimpleVol   = nullptr;
+    WAVEFORMATEX*        pWfx         = nullptr;
+    UINT32               bufFrames    = 0;
 
-    g_pAudioClient->Start();
-    LogToFile("[Audio] WASAPI client started");
+    // ---- local FFmpeg state ----
+    AVFormatContext* pFmt    = nullptr;
+    AVCodecContext*  pCodec  = nullptr;
+    AVFrame*         pFrame  = av_frame_alloc();
+    AVPacket*        pPacket = av_packet_alloc();
+    SwrContext*      pSwr    = nullptr;
+    int              audioIdx = -1;
 
-    const UINT32 blockAlign = g_pWfx->nBlockAlign;
+    auto isStale = [&]() -> bool {
+        return g_generation != myGen || !g_audioRunning;
+    };
 
-    // Intermediate ring buffer — đủ cho 1 giây audio
-    const UINT32 ringMax  = g_pWfx->nSamplesPerSec * blockAlign; // 1 giây
-    BYTE*        ringBuf  = (BYTE*)malloc(ringMax);
-    UINT32       ringHead = 0; // write pos
-    UINT32       ringTail = 0; // read pos
-    UINT32       ringUsed = 0; // bytes available to push
-
-    if (!ringBuf) {
-        LogToFile("[Audio] OOM ring buffer");
-        g_pAudioClient->Stop();
+    auto cleanup = [&]() {
+        if (pSwr)    swr_free(&pSwr);
+        if (pCodec)  avcodec_free_context(&pCodec);
+        if (pFmt)    avformat_close_input(&pFmt);
+        if (pFrame)  av_frame_free(&pFrame);
+        if (pPacket) av_packet_free(&pPacket);
+        if (pAudioClient) pAudioClient->Stop();
+        SafeRel(pSimpleVol);
+        SafeRel(pRender);
+        SafeRel(pAudioClient);
+        SafeRel(pDevice);
+        SafeRel(pEnum);
+        if (pWfx) { CoTaskMemFree(pWfx); pWfx = nullptr; }
+        CloseHandle(myKick);
         timeEndPeriod(1);
-        return 1;
+        // Nếu thread này vẫn là generation hiện hành (tức là tự thoát do lỗi/EOF,
+        // không phải bị Start()/Stop() khác bump gen) thì phải hạ g_audioRunning
+        // xuống false, nếu không AudioSystem_IsRunning()/GetClockSec() sẽ báo sai
+        // là audio vẫn đang chạy dù thread đã chết (vd. file không có audio stream).
+        if (g_generation == myGen) g_audioRunning = false;
+        LogToFile("[Audio] Thread gen=%d stopped", (int)myGen);
+    };
+
+    if (!pFrame || !pPacket) { cleanup(); return 0; }
+
+    // ---- FFmpeg open ----
+    // Audio chỉ cần tìm 1 stream audio, không cần probe sâu như video decoder
+    // (video decoder cần full probe để biết codec/PTS chính xác cho timing).
+    // Giảm probesize/analyzeduration giúp avformat_open_input + find_stream_info
+    // nhanh hơn đáng kể trên HDD, đặc biệt vì audio mở file LẦN THỨ HAI
+    // (video decoder đã probe lần đầu) — không cần probe kỹ lại từ đầu.
+    pFmt = avformat_alloc_context();
+    if (pFmt) {
+        pFmt->probesize = 512 * 1024;        // 512KB thay vì mặc định ~5MB
+        pFmt->max_analyze_duration = 1000000; // 1 giây (đơn vị AV_TIME_BASE = micro-sec) thay vì mặc định 5s
+    }
+    if (avformat_open_input(&pFmt, path_utf8, nullptr, nullptr) < 0) {
+        LogToFile("[Audio] avformat_open_input failed");
+        cleanup(); return 0;
+    }
+    avformat_find_stream_info(pFmt, nullptr);
+
+    for (unsigned i = 0; i < pFmt->nb_streams; i++) {
+        if (pFmt->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_AUDIO) {
+            audioIdx = (int)i; break;
+        }
+    }
+    if (audioIdx < 0) { LogToFile("[Audio] No audio stream"); cleanup(); return 0; }
+    if (isStale())    { cleanup(); return 0; }
+
+    {
+        AVCodecParameters* cp    = pFmt->streams[audioIdx]->codecpar;
+        const AVCodec*     codec = avcodec_find_decoder(cp->codec_id);
+        if (!codec) { LogToFile("[Audio] No decoder"); cleanup(); return 0; }
+        pCodec = avcodec_alloc_context3(codec);
+        avcodec_parameters_to_context(pCodec, cp);
+        if (avcodec_open2(pCodec, codec, nullptr) < 0) { LogToFile("[Audio] avcodec_open2 failed"); cleanup(); return 0; }
+
+        // WASAPI init
+        CoInitializeEx(nullptr, COINIT_MULTITHREADED);
+        if (FAILED(CoCreateInstance(__uuidof(MMDeviceEnumerator), nullptr, CLSCTX_ALL,
+                                    __uuidof(IMMDeviceEnumerator), (void**)&pEnum))
+            || FAILED(pEnum->GetDefaultAudioEndpoint(eRender, eConsole, &pDevice))
+            || FAILED(pDevice->Activate(__uuidof(IAudioClient), CLSCTX_ALL, nullptr, (void**)&pAudioClient))
+            || FAILED(pAudioClient->GetMixFormat(&pWfx))) {
+            LogToFile("[Audio] WASAPI init failed"); cleanup(); return 0;
+        }
+        REFERENCE_TIME bufDur = 2000000LL;
+        if (FAILED(pAudioClient->Initialize(AUDCLNT_SHAREMODE_SHARED, AUDCLNT_STREAMFLAGS_EVENTCALLBACK,
+                                             bufDur, 0, pWfx, nullptr))
+            || FAILED(pAudioClient->SetEventHandle(myKick))
+            || FAILED(pAudioClient->GetBufferSize(&bufFrames))
+            || FAILED(pAudioClient->GetService(__uuidof(IAudioRenderClient), (void**)&pRender))) {
+            LogToFile("[Audio] WASAPI configure failed"); cleanup(); return 0;
+        }
+        if (SUCCEEDED(pAudioClient->GetService(__uuidof(ISimpleAudioVolume), (void**)&pSimpleVol))) {
+            pSimpleVol->SetMasterVolume(g_audioVolume, nullptr);
+            pSimpleVol->SetMute(g_audioMuted ? TRUE : FALSE, nullptr);
+        }
+        LogToFile("[Audio] WASAPI OK %dHz %dch", pWfx->nSamplesPerSec, pWfx->nChannels);
+
+        // SWR
+        AVSampleFormat swrOutFmt = (pWfx->wBitsPerSample == 16) ? AV_SAMPLE_FMT_S16 : AV_SAMPLE_FMT_FLT;
+        pSwr = swr_alloc();
+        AVChannelLayout outLayout;
+        if (pWfx->nChannels == 1) { AVChannelLayout tmp = AV_CHANNEL_LAYOUT_MONO;   outLayout = tmp; }
+        else                      { AVChannelLayout tmp = AV_CHANNEL_LAYOUT_STEREO; outLayout = tmp; }
+        av_opt_set_chlayout  (pSwr, "in_chlayout",    &pCodec->ch_layout,     0);
+        av_opt_set_int       (pSwr, "in_sample_rate",  pCodec->sample_rate,    0);
+        av_opt_set_sample_fmt(pSwr, "in_sample_fmt",   pCodec->sample_fmt,     0);
+        av_opt_set_chlayout  (pSwr, "out_chlayout",   &outLayout,              0);
+        av_opt_set_int       (pSwr, "out_sample_rate", pWfx->nSamplesPerSec,   0);
+        av_opt_set_sample_fmt(pSwr, "out_sample_fmt",  swrOutFmt,              0);
+        if (swr_init(pSwr) < 0) { LogToFile("[Audio] swr_init failed"); cleanup(); return 0; }
     }
 
-    // Helper lambdas cho ring buffer
-    auto ringWrite = [&](const BYTE* src, UINT32 bytes) -> bool {
-        if (bytes > ringMax - ringUsed) return false; // overflow
-        UINT32 part1 = min(bytes, ringMax - ringHead);
-        memcpy(ringBuf + ringHead, src, part1);
-        if (bytes > part1)
-            memcpy(ringBuf, src + part1, bytes - part1);
-        ringHead = (ringHead + bytes) % ringMax;
-        ringUsed += bytes;
-        return true;
-    };
+    if (isStale()) { cleanup(); return 0; }
 
-    auto ringRead = [&](BYTE* dst, UINT32 bytes) -> bool {
-        if (bytes > ringUsed) return false;
-        UINT32 part1 = min(bytes, ringMax - ringTail);
-        memcpy(dst, ringBuf + ringTail, part1);
-        if (bytes > part1)
-            memcpy(dst + part1, ringBuf, bytes - part1);
-        ringTail = (ringTail + bytes) % ringMax;
-        ringUsed -= bytes;
-        return true;
-    };
+    // ---- Ring buffer + playback loop ----
+    const UINT32 blockAlign = pWfx->nBlockAlign;
+    RingBuf ring;
+    if (!ring.alloc(pWfx->nSamplesPerSec * blockAlign)) { cleanup(); return 0; }
 
-    bool audioEOS = false;
+    const int swrOutMax = 2048;
+    BYTE* swrTmp = (BYTE*)malloc((size_t)swrOutMax * blockAlign);
+    if (!swrTmp) { ring.free_(); cleanup(); return 0; }
 
-    while (g_audioRunning) {
-        // Handle seek
-        if (g_audioSeekPos >= 0) {
-            LONGLONG seekTo = g_audioSeekPos;
-            g_audioSeekPos  = -1LL;
-            ringHead = ringTail = ringUsed = 0; // flush ring
-            audioEOS = false;
+    // Pre-fill silence
+    { UINT32 pad=0; pAudioClient->GetCurrentPadding(&pad); UINT32 avail=bufFrames-pad;
+      BYTE* pd=nullptr;
+      if (avail>0 && SUCCEEDED(pRender->GetBuffer(avail,&pd)) && pd)
+        { ZeroMemory(pd,avail*blockAlign); pRender->ReleaseBuffer(avail,0); } }
+    pAudioClient->Start();
 
-            PROPVARIANT v; PropVariantInit(&v);
-            v.vt = VT_I8; v.hVal.QuadPart = seekTo;
-            if (g_pAudioReader)
-                g_pAudioReader->SetCurrentPosition(GUID_NULL, v);
-            PropVariantClear(&v);
-            LogToFile("[Audio] Seeked to %lld", seekTo);
+    bool eos = false;
+    UINT64 framesPushedTotal = 0;   // tổng số PCM frame đã đẩy cho WASAPI từ đầu file
+    g_audioClockSec.store(0.0);     // reset master clock cho lần phát mới
+
+    while (!isStale()) {
+        // Loop signal
+        if (InterlockedExchange(&g_loopPending, 0)) {
+            ring.flush(); eos = false;
+            av_seek_frame(pFmt, audioIdx, 0, AVSEEK_FLAG_BACKWARD);
+            avcodec_flush_buffers(pCodec);
+            swr_init(pSwr);
+            framesPushedTotal = 0;
+            g_audioClockSec.store(0.0);
+            g_audioClockValid.store(false);   // video se fallback ve wall-clock cho
+                                               // toi khi audio that su co PCM moi sau
+                                               // seek, tranh khung lap moi lan loop
+            LogToFile("[Audio] Loop seeked");
         }
 
-        // Pause handling
+        // Pause
         if (g_audioPaused) {
-            g_pAudioClient->Stop();
-            while (g_audioPaused && g_audioRunning && g_audioSeekPos < 0)
+            pAudioClient->Stop();
+            while (g_audioPaused && !isStale() && !g_loopPending)
                 Sleep(20);
-            if (!g_audioRunning) break;
-            // Flush WASAPI buffer trước khi resume tránh pop
-            {
-                UINT32 pad = 0;
-                g_pAudioClient->GetCurrentPadding(&pad);
-                UINT32 avail = g_bufferFrames - pad;
-                if (avail > 0) {
-                    BYTE* pData = NULL;
-                    if (SUCCEEDED(g_pRenderClient->GetBuffer(avail, &pData)) && pData) {
-                        ZeroMemory(pData, avail * blockAlign);
-                        g_pRenderClient->ReleaseBuffer(avail, 0);
-                    }
-                }
-            }
-            g_pAudioClient->Start();
+            if (isStale()) break;
+            { UINT32 pad=0,avail=0; pAudioClient->GetCurrentPadding(&pad); avail=bufFrames-pad;
+              BYTE* pd=nullptr;
+              if (avail>0 && SUCCEEDED(pRender->GetBuffer(avail,&pd)) && pd)
+                { ZeroMemory(pd,avail*blockAlign); pRender->ReleaseBuffer(avail,0); } }
+            pAudioClient->Start();
             continue;
         }
 
-        // === STEP 1: Hỏi WASAPI cần bao nhiêu frames ===
-        UINT32 pad   = 0;
-        g_pAudioClient->GetCurrentPadding(&pad);
-        UINT32 avail = g_bufferFrames - pad; // frames trống trong WASAPI buffer
-
-        if (avail == 0) {
-            // Buffer đầy — đợi WASAPI event (max 1 frameDur)
-            WaitForSingleObject(g_hAudioEvent, 20);
-            continue;
-        }
-
+        UINT32 pad=0; pAudioClient->GetCurrentPadding(&pad);
+        UINT32 avail = bufFrames - pad;
+        if (avail == 0) { WaitForSingleObject(myKick, 20); continue; }
         UINT32 needBytes = avail * blockAlign;
 
-        // === STEP 2: Decode MF samples vào ring buffer cho đến khi đủ data ===
-        while (!audioEOS && ringUsed < needBytes && g_audioRunning && g_audioSeekPos < 0) {
-            IMFSample* pSamp = NULL;
-            DWORD flags = 0, si = 0;
-            LONGLONG ts  = 0;
-
-            HRESULT hr = g_pAudioReader->ReadSample(
-                MF_SOURCE_READER_FIRST_AUDIO_STREAM, 0, &si, &flags, &ts, &pSamp);
-
-            if (FAILED(hr)) { audioEOS = true; break; }
-
-            if (flags & MF_SOURCE_READERF_ENDOFSTREAM) {
-                if (pSamp) { pSamp->Release(); pSamp = NULL; }
-                audioEOS = true;
-                LogToFile("[Audio] EOS");
-                break;
-            }
-
-            if (!pSamp || (flags & MF_SOURCE_READERF_STREAMTICK)) {
-                if (pSamp) { pSamp->Release(); pSamp = NULL; }
-                continue;
-            }
-
-            IMFMediaBuffer* pBuf = NULL;
-            hr = pSamp->ConvertToContiguousBuffer(&pBuf);
-            if (SUCCEEDED(hr) && pBuf) {
-                BYTE* pData = NULL; DWORD maxLen = 0, curLen = 0;
-                hr = pBuf->Lock(&pData, &maxLen, &curLen);
-                if (SUCCEEDED(hr) && pData && curLen > 0) {
-                    ringWrite(pData, curLen); // overflow được ignore — tự drop
+        // Decode → ring
+        while (!eos && ring.used < needBytes && !isStale() && !g_loopPending) {
+            int ret = av_read_frame(pFmt, pPacket);
+            if (ret < 0) {
+                if (ret == AVERROR_EOF) {
+                    avcodec_send_packet(pCodec, nullptr);
+                    while (avcodec_receive_frame(pCodec, pFrame) == 0) {
+                        uint8_t* out[1]={swrTmp};
+                        int n = swr_convert(pSwr,out,swrOutMax,(const uint8_t**)pFrame->data,pFrame->nb_samples);
+                        if (n>0) ring.write(swrTmp,(UINT32)n*blockAlign);
+                        av_frame_unref(pFrame);
+                    }
+                    eos = true;
                 }
-                if (SUCCEEDED(hr)) pBuf->Unlock();
-                pBuf->Release();
+                av_packet_unref(pPacket); break;
             }
-            pSamp->Release();
+            if (pPacket->stream_index != audioIdx) { av_packet_unref(pPacket); continue; }
+            if (avcodec_send_packet(pCodec, pPacket) >= 0) {
+                while (avcodec_receive_frame(pCodec, pFrame) == 0) {
+                    uint8_t* out[1]={swrTmp};
+                    int n = swr_convert(pSwr,out,swrOutMax,(const uint8_t**)pFrame->data,pFrame->nb_samples);
+                    if (n>0) ring.write(swrTmp,(UINT32)n*blockAlign);
+                    av_frame_unref(pFrame);
+                }
+            }
+            av_packet_unref(pPacket);
         }
 
-        // === STEP 3: Push từ ring buffer vào WASAPI — đúng số avail frames ===
-        UINT32 canPushBytes  = min(ringUsed, needBytes);
-        UINT32 canPushFrames = canPushBytes / blockAlign;
+        // Push → WASAPI
+        UINT32 canBytes  = std::min(ring.used, needBytes);
+        UINT32 canFrames = canBytes / blockAlign;
 
-        if (canPushFrames > 0) {
-            BYTE* pRender = NULL;
-            HRESULT hr = g_pRenderClient->GetBuffer(canPushFrames, &pRender);
-            if (SUCCEEDED(hr) && pRender) {
-                // Apply software volume nếu ISimpleAudioVolume không available
-                if (!g_pSimpleVol) {
-                    float vol = g_audioMuted ? 0.0f : g_audioVolume;
-                    // temp copy để scale
-                    UINT32 totalBytes = canPushFrames * blockAlign;
-                    BYTE* tmp = (BYTE*)alloca(totalBytes);
-                    ringRead(tmp, totalBytes);
-                    if (g_pWfx->wBitsPerSample == 32) {
-                        float* s = (float*)tmp;
-                        UINT32 n = totalBytes / 4;
-                        for (UINT32 i = 0; i < n; i++) s[i] *= vol;
-                    } else if (g_pWfx->wBitsPerSample == 16) {
-                        short* s = (short*)tmp;
-                        UINT32 n = totalBytes / 2;
-                        for (UINT32 i = 0; i < n; i++) s[i] = (short)(s[i] * vol);
-                    }
-                    memcpy(pRender, tmp, totalBytes);
-                } else {
-                    // ISimpleAudioVolume lo volume — đọc thẳng từ ring
-                    if (g_audioMuted) {
-                        ZeroMemory(pRender, canPushFrames * blockAlign);
-                        ringTail = (ringTail + canPushFrames * blockAlign) % ringMax;
-                        ringUsed -= canPushFrames * blockAlign;
-                    } else {
-                        ringRead(pRender, canPushFrames * blockAlign);
+        if (canFrames > 0) {
+            BYTE* pd=nullptr;
+            if (SUCCEEDED(pRender->GetBuffer(canFrames, &pd)) && pd) {
+                if (g_audioMuted) { ZeroMemory(pd,canFrames*blockAlign); ring.discard(canFrames*blockAlign); }
+                else {
+                    ring.read(pd, canFrames*blockAlign);
+                    if (!pSimpleVol) {
+                        float vol = g_audioVolume;
+                        if (pWfx->wBitsPerSample==32) { float* s=(float*)pd; for(UINT32 i=0;i<canFrames*pWfx->nChannels;i++) s[i]*=vol; }
+                        else if(pWfx->wBitsPerSample==16) { short* s=(short*)pd; for(UINT32 i=0;i<canFrames*pWfx->nChannels;i++) s[i]=(short)(s[i]*vol); }
                     }
                 }
-                g_pRenderClient->ReleaseBuffer(canPushFrames, 0);
+                pRender->ReleaseBuffer(canFrames, 0);
+
+                // Cập nhật master clock: framesPushedTotal là tổng đã đẩy vào WASAPI,
+                // trừ đi phần còn đang nằm trong buffer phần cứng (pad) sẽ ra vị trí
+                // PCM thực sự đang phát ra loa lúc này — chính xác hơn là đếm theo
+                // thời điểm ReleaseBuffer (lúc đó audio chưa thực sự phát ra).
+                framesPushedTotal += canFrames;
+                UINT32 padNow = 0;
+                pAudioClient->GetCurrentPadding(&padNow);
+                UINT64 playedFrames = (framesPushedTotal > padNow) ? (framesPushedTotal - padNow) : 0;
+                g_audioClockSec.store((double)playedFrames / (double)pWfx->nSamplesPerSec);
+                g_audioClockValid.store(true);   // tu day audioSec moi dang tin
             }
-        } else if (audioEOS) {
-            // Ring kosong và EOS — đợi seek (loop) hoặc stop
-            while (g_audioRunning && g_audioSeekPos < 0 && !g_audioPaused)
-                Sleep(10);
+        } else if (eos) {
+            while (!isStale() && !g_loopPending && !g_audioPaused) Sleep(10);
         } else {
-            // Ring kosong nhưng MF chưa EOS — underrun, push silence
-            BYTE* pRender = NULL;
-            if (SUCCEEDED(g_pRenderClient->GetBuffer(avail, &pRender)) && pRender) {
-                ZeroMemory(pRender, avail * blockAlign);
-                g_pRenderClient->ReleaseBuffer(avail, 0);
-            }
+            BYTE* pd=nullptr;
+            if (avail>0 && SUCCEEDED(pRender->GetBuffer(avail,&pd)) && pd)
+                { ZeroMemory(pd,avail*blockAlign); pRender->ReleaseBuffer(avail,0); }
         }
 
-        // Đợi WASAPI event trước khi lặp
-        WaitForSingleObject(g_hAudioEvent, 20);
+        WaitForSingleObject(myKick, 20);
     }
 
-    free(ringBuf);
-    g_pAudioClient->Stop();
-    timeEndPeriod(1);
-    LogToFile("[Audio] Thread stopped");
+    free(swrTmp);
+    ring.free_();
+    cleanup();
     return 0;
 }
 
@@ -438,86 +367,95 @@ static DWORD WINAPI AudioThread(LPVOID) {
 //  Public API
 // ============================================================
 bool AudioSystem_Start(const wchar_t* path, float volume) {
-    AudioSystem_Stop(); // cleanup trước
+    // Signal thread cũ thoát (nếu có) — không wait
+    g_audioRunning = false;
+    g_audioPaused  = false;
+    if (g_hKickEvent) SetEvent(g_hKickEvent);
+    if (g_hAudioThread) { CloseHandle(g_hAudioThread); g_hAudioThread = nullptr; }
 
     if (!path || path[0] == L'\0') return false;
 
-    wcscpy_s(g_audioPath, path);
-    g_audioVolume  = volume;
+    // Bump generation — thread cũ sẽ thấy isStale() == true và tự thoát
+    LONG gen = InterlockedIncrement(&g_generation);
+
+    g_audioVolume  = (volume < 0.f ? 0.f : volume > 1.f ? 1.f : volume);
     g_audioPaused  = false;
     g_audioMuted   = false;
-    g_audioSeekPos = -1LL;
-
-    if (!Audio_OpenReader(path)) {
-        LogToFile("[Audio] Failed to open audio reader");
-        return false;
-    }
-
-    if (!Audio_InitWASAPI()) {
-        LogToFile("[Audio] Failed to init WASAPI");
-        Audio_Cleanup_Internal();
-        return false;
-    }
-
-    // Apply initial volume
-    if (g_pSimpleVol) {
-        g_pSimpleVol->SetMasterVolume(g_audioVolume, NULL);
-        g_pSimpleVol->SetMute(FALSE, NULL);
-    }
-
+    g_loopPending  = 0;
+    g_audioClockSec.store(0.0);
+    g_audioClockValid.store(false);   // audio thread vua duoc tao, chua co PCM that
     g_audioRunning = true;
-    g_hAudioThread = CreateThread(NULL, 0, AudioThread, NULL, 0, NULL);
+
+    // Tạo kick event mới cho thread mới
+    HANDLE kick = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+    g_hKickEvent = kick;  // store để NotifyVideoLoop / SetPaused dùng
+
+    AudioStartParams* p = new AudioStartParams();
+    wcscpy_s(p->path, path);
+    p->volume    = volume;
+    p->gen       = gen;
+    p->kickEvent = kick;
+
+    g_hAudioThread = CreateThread(nullptr, 0, AudioThread, p, 0, nullptr);
     if (!g_hAudioThread) {
-        LogToFile("[Audio] CreateThread failed");
+        LogToFile("[Audio] CreateThread failed: %d", GetLastError());
         g_audioRunning = false;
-        Audio_Cleanup_Internal();
+        CloseHandle(kick);
+        g_hKickEvent = nullptr;
+        delete p;
         return false;
     }
 
-    LogToFile("[Audio] System started for: %S", path);
+    LogToFile("[Audio] Started gen=%d: %S", (int)gen, path);
     return true;
 }
 
 void AudioSystem_Stop() {
-    if (g_hAudioThread) {
-        g_audioRunning = false;
-        g_audioPaused  = false; // unblock pause loop
-        if (g_hAudioEvent) SetEvent(g_hAudioEvent); // unblock wait
-        if (WaitForSingleObject(g_hAudioThread, 1000) == WAIT_TIMEOUT) {
-            TerminateThread(g_hAudioThread, 0);
-            LogToFile("[Audio] Thread forcibly terminated");
-        }
-        CloseHandle(g_hAudioThread);
-        g_hAudioThread = NULL;
-    }
-    Audio_Cleanup_Internal();
-    LogToFile("[Audio] System stopped");
+    if (!g_hAudioThread) return;
+    g_audioRunning = false;
+    g_audioPaused  = false;
+    InterlockedIncrement(&g_generation);  // invalidate thread
+    if (g_hKickEvent) SetEvent(g_hKickEvent);
+    // Detach — thread tự dọn và thoát, không block caller
+    CloseHandle(g_hAudioThread);
+    g_hAudioThread = nullptr;
+    LogToFile("[Audio] Stop posted (detached)");
 }
 
 void AudioSystem_SetPaused(bool paused) {
     g_audioPaused = paused;
-    if (!paused && g_hAudioEvent) SetEvent(g_hAudioEvent); // wake thread
+    if (!paused && g_hKickEvent) SetEvent(g_hKickEvent);
 }
 
 void AudioSystem_SetVolume(float volume) {
-    if (volume < 0.0f) volume = 0.0f;
-    if (volume > 1.0f) volume = 1.0f;
+    if (volume < 0.f) volume = 0.f;
+    if (volume > 1.f) volume = 1.f;
     g_audioVolume = volume;
-    if (g_pSimpleVol && !g_audioMuted)
-        g_pSimpleVol->SetMasterVolume(volume, NULL);
+    // ISimpleAudioVolume là local thread — không thể set từ đây
+    // Thread sẽ đọc g_audioVolume qua software path nếu pSimpleVol unavailable
+    // Để update ngay: gửi kick ép thread process lại volume
+    if (g_hKickEvent) SetEvent(g_hKickEvent);
 }
 
 void AudioSystem_SetMuted(bool muted) {
     g_audioMuted = muted;
-    if (g_pSimpleVol)
-        g_pSimpleVol->SetMute(muted ? TRUE : FALSE, NULL);
+    if (g_hKickEvent) SetEvent(g_hKickEvent);
 }
 
-void AudioSystem_Seek(LONGLONG positionHns) {
-    g_audioSeekPos = positionHns;
-    if (g_hAudioEvent) SetEvent(g_hAudioEvent); // wake thread để xử lý seek ngay
+void AudioSystem_NotifyVideoLoop() {
+    InterlockedExchange(&g_loopPending, 1);
+    if (g_hKickEvent) SetEvent(g_hKickEvent);
 }
 
 bool AudioSystem_IsRunning() {
-    return g_audioRunning && g_hAudioThread != NULL;
+    return g_audioRunning && g_hAudioThread != nullptr;
+}
+
+bool AudioSystem_HasValidClock() {
+    return g_audioRunning && g_audioClockValid.load();
+}
+
+double AudioSystem_GetClockSec() {
+    if (!g_audioRunning) return 0.0;
+    return g_audioClockSec.load();
 }
